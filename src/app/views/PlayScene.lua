@@ -72,6 +72,7 @@ function PlayScene:CreatePlayLayer( width, height )
         
         if cc.rectContainsPoint(rect, locationInNode) and self.BlockSprites[index] then
         	self.sourceBlockIndex = index
+			self.BlockSprites[index]:setLocalZOrder(1)
             return true
         end
         return false
@@ -89,10 +90,18 @@ function PlayScene:CreatePlayLayer( width, height )
 		-- 相加判断 > 13
 		-- 相加并修改UI
 		local locationInNode = layer:convertToNodeSpace(touch:getLocation())
+		local s = layer:getContentSize()
+		local rect = cc.rect(0, 0, s.width, s.height)
         local target_row, target_col = self:PositionToRowCol(locationInNode)
         local target_index = self:RowColToIndex(target_row, target_col)
 
-        -- dump(self.BlockSprites[self.sourceBlockIndex].data)
+		self.BlockSprites[self.sourceBlockIndex]:setLocalZOrder(0)
+        if not cc.rectContainsPoint(rect, locationInNode) then
+        	
+			self.BlockSprites[self.sourceBlockIndex]:runAction( cc.MoveTo:create(0.2, cc.p( self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)))
+        	self.sourceBlockIndex = 0
+            return
+        end
 
         if self.sourceBlockIndex == target_index then
         	self.BlockSprites[self.sourceBlockIndex]:runAction( cc.MoveTo:create(0.2, cc.p( self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)))
@@ -121,14 +130,19 @@ function PlayScene:CreatePlayLayer( width, height )
         	if self.BlockSprites[self.sourceBlockIndex].data.value + self.BlockSprites[target_index].data.value > 13 then
         		self.BlockSprites[self.sourceBlockIndex]:runAction( cc.MoveTo:create(0.2, cc.p( self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)))
 
-        		-- self.BlockSprites[self.sourceBlockIndex]:setPosition(self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)
-
+        		
 	        else
 	        	self.BlockSprites[target_index].data.value = self.BlockSprites[target_index].data.value + self.BlockSprites[self.sourceBlockIndex].data.value
-	        	self.BlockSprites[target_index].label:setString(self.BlockSprites[target_index].data.value)
+	        	-- self.BlockSprites[target_index].label:setString(self.BlockSprites[target_index].data.value)
 
+				self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 	        	self.BlockSprites[self.sourceBlockIndex]:removeFromParent()
 	        	self.BlockSprites[self.sourceBlockIndex] = nil
+				
+				if self.BlockSprites[target_index].data.value == 13 then
+					-- self.BlockSprites[target_index].label:setColor(cc.c3b(255,0,0))
+					self:CheckCrush(self.BlockSprites[target_index].data.row, self.BlockSprites[target_index].data.col)
+				end
 
 	        	self:RandomCreateBlock():addTo(layer)
         	end
@@ -179,12 +193,18 @@ function PlayScene:RandomCreateBlock(  )
 	block.data.posx = posx
 	block.data.posy = posy
 	block.data.value = math.random(1,12)
-	block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
-	block:addChild(block.label)
+	-- block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
+	-- block:addChild(block.label)
+
+	block:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2),  cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 
 	self.BlockSprites[index] = block
 
 	return block
+end
+
+function PlayScene:CheckCrush(row, col)
+
 end
 
 function PlayScene:IndexToRowCol( index )
