@@ -14,24 +14,38 @@ local HALF_BLOCK_WIDTH = BLOCK_WIDTH * 0.5
 local HALF_BLOCK_HEIGHT = BLOCK_HEIGHT * 0.5
 
 function PlayScene:onCreate()
-    -- add background image
-    -- display.newSprite("HelloWorld.png")
-    --     :move(display.center)
-    --     :addTo(self)
 
-    -- -- add HelloWorld label
-    -- cc.Label:createWithSystemFont("Hello World", "Arial", 40)
-    --     :move(display.cx, display.cy + 200)
-    --     :addTo(self)
+	-- 数据初始化
+	self.BlockSprites = { 
+						  false, false, false, false, false, false, false,
+						  false, false, false, false, false, false, false,
+						  false, false, false, false, false, false, false,
+						  false, false, false, false, false, false, false,
+						  false, false, false, false, false, false, false,
+						  false, false, false, false, false, false, false,
+						  false, false, false, false, false, false, false,
+						}
+
+	-- self.BlockSprites = {}
+	self.sourceBlockIndex = nil
+
+    self:CreateBackground():addTo(self)
 
     self:CreatePlayLayer(PLAY_LAYER_WIDTH, PLAY_LAYER_HEIGHT):addTo(self):move(display.cx, display.cy)
 
+end
+
+function PlayScene:CreateBackground(  )
+	local background = cc.LayerColor:create(cc.c4b(255,255,255,255))
+
+	return background
 end
 
 function PlayScene:CreatePlayLayer( width, height )
 	local layer = cc.LayerColor:create(cc.c4b(255,255,255,255), width, height)
 	layer:ignoreAnchorPointForPosition(false)
 
+	-- 创建图块背景
 	for i=1,COL do
 		for j=1,ROW do
 			display.newSprite("block0.png")
@@ -40,9 +54,137 @@ function PlayScene:CreatePlayLayer( width, height )
 		end
 	end
 
+	-- 随机创建一个新的block
+	self:RandomCreateBlock():addTo(layer)
+
+
+	-- 添加触摸事件，对应游戏规则
+	local function onTouchBegan(touch, event)
+		-- 坐标选 source ，并确定是否传递触摸
+        -- local target = event:getCurrentTarget()
+        
+        local locationInNode = layer:convertToNodeSpace(touch:getLocation())
+        local s = layer:getContentSize()
+        local rect = cc.rect(0, 0, s.width, s.height)
+        local row, col = self:PositionToRowCol(locationInNode)
+        local index = self:RowColToIndex(row, col)
+
+        
+        if cc.rectContainsPoint(rect, locationInNode) and self.BlockSprites[index] then
+        	self.sourceBlockIndex = index
+            return true
+        end
+        return false
+	end
+
+	local function onTouchMoved(touch, event)
+		-- 将 source 跟随手指移动
+		local locationInNode = layer:convertToNodeSpace(touch:getLocation())
+		self.BlockSprites[self.sourceBlockIndex]:setPosition(locationInNode)
+	end
+
+	local function onTouchEnded(touch, event)
+		-- 相同判断
+		-- 目标不存在判断
+		-- 相加判断 > 13
+		-- 相加并修改UI
+		local locationInNode = layer:convertToNodeSpace(touch:getLocation())
+        local target_row, target_col = self:PositionToRowCol(locationInNode)
+        local target_index = self:RowColToIndex(target_row, target_col)
+
+        -- dump(self.BlockSprites[self.sourceBlockIndex].data)
+
+        if self.sourceBlockIndex == target_index then
+        	self.BlockSprites[self.sourceBlockIndex]:runAction( cc.MoveTo:create(0.2, cc.p( self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)))
+        
+        	return
+        end
+
+        if not self.BlockSprites[target_index] then
+        	local target_posx, target_posy = self:RowColToPosition(target_row, target_col)
+        	
+        	self.BlockSprites[target_index] = clone(self.BlockSprites[self.sourceBlockIndex])
+        	self.BlockSprites[self.sourceBlockIndex] = false
+
+        	self.BlockSprites[target_index]:setPosition(cc.p(target_posx, target_posy))
+        	self.BlockSprites[target_index].data.index = target_index
+        	self.BlockSprites[target_index].data.row = target_row
+        	self.BlockSprites[target_index].data.col = target_col
+        	self.BlockSprites[target_index].data.posx = target_posx
+        	self.BlockSprites[target_index].data.posy = target_posy
+
+        	
+        	self:RandomCreateBlock():addTo(layer)
+
+        else
+
+        	if self.BlockSprites[self.sourceBlockIndex].data.value + self.BlockSprites[target_index].data.value > 13 then
+        		self.BlockSprites[self.sourceBlockIndex]:runAction( cc.MoveTo:create(0.2, cc.p( self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)))
+
+        		-- self.BlockSprites[self.sourceBlockIndex]:setPosition(self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)
+
+	        else
+	        	self.BlockSprites[target_index].data.value = self.BlockSprites[target_index].data.value + self.BlockSprites[self.sourceBlockIndex].data.value
+	        	self.BlockSprites[target_index].label:setString(self.BlockSprites[target_index].data.value)
+
+	        	self.BlockSprites[self.sourceBlockIndex]:removeFromParent()
+	        	self.BlockSprites[self.sourceBlockIndex] = nil
+
+	        	self:RandomCreateBlock():addTo(layer)
+        	end
+        end
+
+	end
+
+	local listener = cc.EventListenerTouchOneByOne:create()
+	listener:setSwallowTouches(true)
+	listener:registerScriptHandler(onTouchBegan, cc.Handler.EVENT_TOUCH_BEGAN)
+	listener:registerScriptHandler(onTouchMoved, cc.Handler.EVENT_TOUCH_MOVED)
+	listener:registerScriptHandler(onTouchEnded, cc.Handler.EVENT_TOUCH_ENDED)
+
+	local eventDispatcher = self:getEventDispatcher()
+	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
 
 
 	return layer
+end
+
+function PlayScene:RandomCreateBlockIndex(  )
+	-- body
+
+	local unused = {}
+	for index=1,#self.BlockSprites do
+		if not self.BlockSprites[index] then
+			table.insert(unused, index)
+		end
+	end	
+
+	return unused[math.random(1, #unused)]
+
+end
+
+function PlayScene:RandomCreateBlock(  )
+	local index = self:RandomCreateBlockIndex()
+	local row, col = self:IndexToRowCol(index)
+	local posx, posy = self:RowColToPosition(row, col)
+
+	-- 自定义一个block类
+	local block = display.newSprite("block13.png")
+		:move(posx, posy)
+
+	block.data = {}
+	block.data.index = index
+	block.data.row = row
+	block.data.col = col
+	block.data.posx = posx
+	block.data.posy = posy
+	block.data.value = math.random(1,12)
+	block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
+	block:addChild(block.label)
+
+	self.BlockSprites[index] = block
+
+	return block
 end
 
 function PlayScene:IndexToRowCol( index )
@@ -62,7 +204,7 @@ function PlayScene:RowColToPosition( row, col )
 end
 
 function PlayScene:PositionToRowCol( pos )
-	return (pos.y - HALF_BLOCK_HEIGHT)/BLOCK_HEIGHT + 1, (pos.x - HALF_BLOCK_WIDTH)/BLOCK_WIDTH + 1
+	return math.ceil(pos.y/BLOCK_HEIGHT), math.ceil(pos.x/BLOCK_WIDTH)
 end
 
 return PlayScene
