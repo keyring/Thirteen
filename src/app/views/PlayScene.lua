@@ -4,6 +4,9 @@
 --
 
 local PlayScene = class("PlayScene", cc.load("mvc").ViewBase)
+local Timer = cc.Director:getInstance():getScheduler()
+
+
 local ROW = 7
 local COL = 7
 local PLAY_LAYER_WIDTH = 630
@@ -12,26 +15,24 @@ local BLOCK_WIDTH = PLAY_LAYER_WIDTH / COL
 local BLOCK_HEIGHT = PLAY_LAYER_HEIGHT / ROW
 local HALF_BLOCK_WIDTH = BLOCK_WIDTH * 0.5
 local HALF_BLOCK_HEIGHT = BLOCK_HEIGHT * 0.5
+local GAME_OVER_CONDITION = ROW * COL * 7
 
 function PlayScene:onCreate()
 
 	-- 数据初始化
-	self.BlockSprites = { 
-						  false, false, false, false, false, false, false,
-						  false, false, false, false, false, false, false,
-						  false, false, false, false, false, false, false,
-						  false, false, false, false, false, false, false,
-						  false, false, false, false, false, false, false,
-						  false, false, false, false, false, false, false,
-						  false, false, false, false, false, false, false,
-						}
-
-	-- self.BlockSprites = {}
-	self.sourceBlockIndex = nil
+	self:InitPlayData()
+	
 
     self:CreateBackground():addTo(self)
 
     self:CreatePlayLayer(PLAY_LAYER_WIDTH, PLAY_LAYER_HEIGHT):addTo(self):move(display.cx, display.cy)
+
+    --- 内存定时清理
+	self.cleanerTimer = Timer:scheduleScriptFunc(function (  )
+	    -- print("------------memory1-----------:", collectgarbage("count"))
+	    collectgarbage("collect")
+	    -- print("------------memory2-----------:", collectgarbage("count"))
+	end,60,false)
 
 end
 
@@ -44,6 +45,7 @@ end
 function PlayScene:CreatePlayLayer( width, height )
 	local layer = cc.LayerColor:create(cc.c4b(255,255,255,255), width, height)
 	layer:ignoreAnchorPointForPosition(false)
+	self.playLayer = layer
 
 	-- 创建图块背景
 	for i=1,COL do
@@ -54,8 +56,8 @@ function PlayScene:CreatePlayLayer( width, height )
 		end
 	end
 
-	-- 随机创建一个新的block
-	self:RandomCreateBlock():addTo(layer)
+	-- 随机创建新的block
+	self:RefreshNext()
 
 
 	-- 添加触摸事件，对应游戏规则
@@ -103,13 +105,15 @@ function PlayScene:CreatePlayLayer( width, height )
             return
         end
 
+        -- 是自己
         if self.sourceBlockIndex == target_index then
         	self.BlockSprites[self.sourceBlockIndex]:runAction( cc.MoveTo:create(0.2, cc.p( self.BlockSprites[self.sourceBlockIndex].data.posx, self.BlockSprites[self.sourceBlockIndex].data.posy)))
         
         	return
         end
 
-        if not self.BlockSprites[target_index] then
+
+        if not self.BlockSprites[target_index] then  -- 移到空位
         	local target_posx, target_posy = self:RowColToPosition(target_row, target_col)
         	
         	self.BlockSprites[target_index] = clone(self.BlockSprites[self.sourceBlockIndex])
@@ -122,8 +126,11 @@ function PlayScene:CreatePlayLayer( width, height )
         	self.BlockSprites[target_index].data.posx = target_posx
         	self.BlockSprites[target_index].data.posy = target_posy
 
-        	
-        	self:RandomCreateBlock():addTo(layer)
+			if self.BlockSprites[target_index].data.value == 13 then
+				self:CheckAndCrush(self.BlockSprites[target_index])
+			end
+
+        	self:RefreshNext()
 
         else
 
@@ -132,19 +139,20 @@ function PlayScene:CreatePlayLayer( width, height )
 
         		
 	        else
+	        	-- 相加
 	        	self.BlockSprites[target_index].data.value = self.BlockSprites[target_index].data.value + self.BlockSprites[self.sourceBlockIndex].data.value
-	        	-- self.BlockSprites[target_index].label:setString(self.BlockSprites[target_index].data.value)
+	        	self.BlockSprites[target_index].label:setString(self.BlockSprites[target_index].data.value)
 
 				self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 	        	self.BlockSprites[self.sourceBlockIndex]:removeFromParent()
-	        	self.BlockSprites[self.sourceBlockIndex] = nil
+	        	self.BlockSprites[self.sourceBlockIndex] = false
 				
 				if self.BlockSprites[target_index].data.value == 13 then
-					-- self.BlockSprites[target_index].label:setColor(cc.c3b(255,0,0))
-					self:CheckCrush(self.BlockSprites[target_index].data.row, self.BlockSprites[target_index].data.col)
+					self.BlockSprites[target_index].label:setColor(cc.c3b(255,0,0))
+					self:CheckAndCrush(self.BlockSprites[target_index])
 				end
 
-	        	self:RandomCreateBlock():addTo(layer)
+	        	self:RefreshNext()
         	end
         end
 
@@ -163,8 +171,72 @@ function PlayScene:CreatePlayLayer( width, height )
 	return layer
 end
 
-function PlayScene:RandomCreateBlockIndex(  )
-	-- body
+function PlayScene:RefreshNext(  )
+	-- 可以随着分数的上涨增加难度，即同时多出现几个
+	for i=1,2 do
+		self:RandomCreateBlock()
+	end
+	
+end
+
+function PlayScene:ResetGame(  )
+	for k,v in pairs(self.BlockSprites) do
+		v.data = nil
+		v:removeFromParent()
+		v = nil
+	end
+	-- 数据初始化
+	self:InitPlayData()
+
+
+	self:RefreshNext()
+end
+
+function PlayScene:InitPlayData(  )
+	self.BlockSprites = { 
+					  false, false, false, false, false, false, false,
+					  false, false, false, false, false, false, false,
+					  false, false, false, false, false, false, false,
+					  false, false, false, false, false, false, false,
+					  false, false, false, false, false, false, false,
+					  false, false, false, false, false, false, false,
+					  false, false, false, false, false, false, false,
+					}
+
+	self.sourceBlockIndex = nil
+	self.playScore = 0
+
+end
+
+function PlayScene:CreateGameOverLayer(  )
+	local layer = cc.LayerColor:create(cc.c4b(255,255,255,180))
+	self:addChild(layer)
+
+	local restart = ccui.Button:create("restart.png")
+	layer:addChild(restart)
+	restart:setPosition(display.cx, display.top+50)
+	restart:runAction(cc.Sequence:create( cc.MoveTo:create(0.3, cc.p(display.cx, display.cy-50)), cc.MoveTo:create(0.05, cc.p(display.cx, display.cy)) ))
+	restart:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+			self:ResetGame()
+			layer:removeFromParent()
+		end
+	end)
+
+
+
+
+	local listener = cc.EventListenerTouchOneByOne:create()
+	listener:setSwallowTouches(true)
+	listener:registerScriptHandler(function ( event, eventType ) return true end, cc.Handler.EVENT_TOUCH_BEGAN)
+
+
+	local eventDispatcher = self:getEventDispatcher()
+	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
+end
+
+
+function PlayScene:RandomCreateBlock(  )
 
 	local unused = {}
 	for index=1,#self.BlockSprites do
@@ -173,18 +245,18 @@ function PlayScene:RandomCreateBlockIndex(  )
 		end
 	end	
 
-	return unused[math.random(1, #unused)]
+	if #unused == 0 then
+		return
+	end
 
-end
-
-function PlayScene:RandomCreateBlock(  )
-	local index = self:RandomCreateBlockIndex()
+	local index = unused[math.random(1, #unused)]
 	local row, col = self:IndexToRowCol(index)
 	local posx, posy = self:RowColToPosition(row, col)
 
 	-- 自定义一个block类
 	local block = display.newSprite("block13.png")
 		:move(posx, posy)
+		:addTo(self.playLayer)
 
 	block.data = {}
 	block.data.index = index
@@ -193,19 +265,31 @@ function PlayScene:RandomCreateBlock(  )
 	block.data.posx = posx
 	block.data.posy = posy
 	block.data.value = math.random(1,12)
-	-- block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
-	-- block:addChild(block.label)
+	block.data.value = math.random(1,12)
+	block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
+	block:addChild(block.label)
 
 	block:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2),  cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 
 	self.BlockSprites[index] = block
 
-	return block
+	if #unused == 1 then
+		-- 下一次没有空位了
+		local totalvalue = 0
+		for k,v in pairs(self.BlockSprites) do
+			totalvalue = totalvalue + v.data.value
+		end
+		-- 检查是不是游戏失败了
+		if totalvalue >= GAME_OVER_CONDITION then
+			-- 弹出游戏结束界面
+			self:CreateGameOverLayer()
+
+		end
+	end
+
 end
 
-function PlayScene:CheckCrush(row, col)
 
-end
 
 function PlayScene:IndexToRowCol( index )
 	local row = math.ceil(index / COL)
