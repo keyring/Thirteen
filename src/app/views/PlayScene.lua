@@ -289,7 +289,84 @@ function PlayScene:RandomCreateBlock(  )
 
 end
 
+function PlayScene:CheckAndCrush(checkblock)
+	local row_checklist = {}
+	local col_checklist = {}
 
+	-- 横着检查一遍
+	local neighborcol = checkblock.data.col - 1
+	while neighborcol > 0 do 	-- 向左检查
+		local tempblock = self.BlockSprites[(checkblock.data.row-1)*COL+neighborcol]
+		if tempblock and tempblock.data.value == checkblock.data.value then
+			table.insert(row_checklist, tempblock.data.index)
+			neighborcol = neighborcol - 1
+		else
+			break
+		end
+	end
+
+	neighborcol = checkblock.data.col + 1
+	while neighborcol <= COL do 	-- 向右检查
+		local tempblock = self.BlockSprites[(checkblock.data.row-1)*COL+neighborcol]
+		if tempblock and tempblock.data.value == checkblock.data.value then
+			table.insert(row_checklist, tempblock.data.index)
+			neighborcol = neighborcol + 1
+		else
+			break
+		end
+	end
+
+	-- 竖着检查一遍
+	local neighborrow = checkblock.data.row - 1
+	while neighborrow > 0 do 	-- 向下检查
+		local tempblock = self.BlockSprites[(neighborrow-1)*COL+checkblock.data.col]
+		if tempblock and tempblock.data.value == checkblock.data.value then
+			table.insert(col_checklist, tempblock.data.index)
+			neighborrow = neighborrow - 1
+		else
+			break
+		end
+	end
+
+	neighborrow = checkblock.data.row + 1
+	while neighborrow <= ROW do 	-- 向上检查
+		local tempblock = self.BlockSprites[(neighborrow-1)*COL+checkblock.data.col]
+		if tempblock and tempblock.data.value == checkblock.data.value then
+			table.insert(col_checklist, tempblock.data.index)
+			neighborrow = neighborrow + 1
+		else
+			break
+		end
+	end
+
+	-- 简单实现多消，未来扩展不同的多消不同的增强
+	local crush_myself = false
+	if #row_checklist > 1 then
+		crush_myself = true
+		for i=1,#row_checklist do
+			self.BlockSprites[row_checklist[i]].data = nil
+			self.BlockSprites[row_checklist[i]]:removeFromParent()
+			self.BlockSprites[row_checklist[i]] = false
+		end
+	end
+
+	if #col_checklist > 1 then
+		crush_myself = true
+		for i=1,#col_checklist do
+			self.BlockSprites[col_checklist[i]].data = nil
+			self.BlockSprites[col_checklist[i]]:removeFromParent()
+			self.BlockSprites[col_checklist[i]] = false
+		end
+	end
+
+	if crush_myself then
+		local index = checkblock.data.index
+		self.BlockSprites[index].data = nil
+		self.BlockSprites[index]:removeFromParent()
+		self.BlockSprites[index] = false
+	end
+
+end
 
 function PlayScene:IndexToRowCol( index )
 	local row = math.ceil(index / COL)
