@@ -19,12 +19,11 @@ local GAME_OVER_CONDITION = ROW * COL * 7
 
 function PlayScene:onCreate()
 
-	-- 数据初始化
+
+	self:CreateBackground():addTo(self)
+
+	-- play数据初始化
 	self:InitPlayData()
-	
-
-    self:CreateBackground():addTo(self)
-
     self:CreatePlayLayer(PLAY_LAYER_WIDTH, PLAY_LAYER_HEIGHT):addTo(self):move(display.cx, display.cy)
 
     --- 内存定时清理
@@ -38,6 +37,12 @@ end
 
 function PlayScene:CreateBackground(  )
 	local background = cc.LayerColor:create(cc.c4b(255,255,255,255))
+
+	self.label_playScore = cc.Label:createWithSystemFont("0", "", 30)
+		:setColor(cc.c3b(0,0,0))
+		:move(display.right-50, display.top-50)
+		:addTo(background)
+		:setAnchorPoint(1,1)
 
 	return background
 end
@@ -146,6 +151,8 @@ function PlayScene:CreatePlayLayer( width, height )
 				self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 	        	self.BlockSprites[self.sourceBlockIndex]:removeFromParent()
 	        	self.BlockSprites[self.sourceBlockIndex] = false
+
+	        	self:UpdateScore(self.BlockSprites[target_index].data.value)
 				
 				if self.BlockSprites[target_index].data.value == 13 then
 					self.BlockSprites[target_index].label:setColor(cc.c3b(255,0,0))
@@ -205,7 +212,13 @@ function PlayScene:InitPlayData(  )
 
 	self.sourceBlockIndex = nil
 	self.playScore = 0
+	self.label_playScore:setString(self.playScore)
 
+end
+
+function PlayScene:UpdateScore( score )
+	self.playScore = self.playScore + score
+	self.label_playScore:setString(self.playScore)
 end
 
 function PlayScene:CreateGameOverLayer(  )
@@ -222,8 +235,6 @@ function PlayScene:CreateGameOverLayer(  )
 			layer:removeFromParent()
 		end
 	end)
-
-
 
 
 	local listener = cc.EventListenerTouchOneByOne:create()
@@ -253,25 +264,16 @@ function PlayScene:RandomCreateBlock(  )
 	local row, col = self:IndexToRowCol(index)
 	local posx, posy = self:RowColToPosition(row, col)
 
-	-- 自定义一个block类
-	local block = display.newSprite("block13.png")
-		:move(posx, posy)
-		:addTo(self.playLayer)
+	local data = {}
+	data.index = index
+	data.row = row
+	data.col = col
+	data.posx = posx
+	data.posy = posy
+	data.value = math.random(1,12)
+	data.value = math.random(1,12)
 
-	block.data = {}
-	block.data.index = index
-	block.data.row = row
-	block.data.col = col
-	block.data.posx = posx
-	block.data.posy = posy
-	block.data.value = math.random(1,12)
-	block.data.value = math.random(1,12)
-	block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
-	block:addChild(block.label)
-
-	block:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2),  cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
-
-	self.BlockSprites[index] = block
+	self:CreateSpecialBlock(data)
 
 	if #unused == 1 then
 		-- 下一次没有空位了
@@ -287,6 +289,27 @@ function PlayScene:RandomCreateBlock(  )
 		end
 	end
 
+end
+
+function PlayScene:CreateSpecialBlock( data )
+	local block = display.newSprite("block13.png")
+		:move(data.posx, data.posy)
+		:addTo(self.playLayer)
+
+	block.data = clone(data)
+
+	block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
+	block:addChild(block.label)
+
+	block:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2),  cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
+
+	self.BlockSprites[block.data.index] = block
+
+	if block.data.value == 13 then
+		self.BlockSprites[block.data.index].label:setColor(cc.c3b(255,0,0))
+		self:CheckAndCrush(self.BlockSprites[data.index])
+	end
+	
 end
 
 function PlayScene:CheckAndCrush(checkblock)
@@ -340,32 +363,240 @@ function PlayScene:CheckAndCrush(checkblock)
 	end
 
 	-- 简单实现多消，未来扩展不同的多消不同的增强
-	local crush_myself = false
+	local crush_row = false
+	local crush_col = false
 	if #row_checklist > 1 then
-		crush_myself = true
+		crush_row = true
 		for i=1,#row_checklist do
-			self.BlockSprites[row_checklist[i]].data = nil
-			self.BlockSprites[row_checklist[i]]:removeFromParent()
-			self.BlockSprites[row_checklist[i]] = false
+			self:CrushOneBlock(row_checklist[i])
 		end
 	end
 
 	if #col_checklist > 1 then
-		crush_myself = true
+		crush_col = true
 		for i=1,#col_checklist do
-			self.BlockSprites[col_checklist[i]].data = nil
-			self.BlockSprites[col_checklist[i]]:removeFromParent()
-			self.BlockSprites[col_checklist[i]] = false
+			self:CrushOneBlock(col_checklist[i])
 		end
 	end
 
-	if crush_myself then
-		local index = checkblock.data.index
-		self.BlockSprites[index].data = nil
-		self.BlockSprites[index]:removeFromParent()
-		self.BlockSprites[index] = false
+	if not crush_row and not crush_col then
+		return
 	end
 
+	local checkblock_index = checkblock.data.index
+	local checkblock_row = checkblock.data.row
+	local checkblock_col = checkblock.data.col
+
+	if crush_row or crush_col then
+		self:CrushOneBlock(checkblock_index)
+	end
+
+	if crush_row and not crush_col then                -- 只有横
+		if #row_checklist == 3 then    -- 四消       
+			--[[  
+				  ####  
+			--]]
+			self:CrushOne()
+			
+		elseif #row_checklist == 4 then  -- 五消
+			--[[  
+				  #####  
+			--]]
+			-- 消除one line
+			for col=1,COL do
+				local index = (checkblock_row-1)*COL + col
+				self:CrushOneBlock(index)
+			end
+		end
+
+
+	elseif not crush_row and crush_col then            --只有竖
+		if #col_checklist == 3 then    -- 四消
+			--[[  
+				  #
+				  #
+				  #
+				  # 
+			--]]
+			self:CrushOne()
+
+		elseif #col_checklist == 4 then  -- 五消
+			--[[  
+				  #
+				  #
+				  #
+				  #
+				  # 
+			--]]
+			-- 消除one line
+			for row=1,ROW do
+				local index = (row-1)*COL + checkblock_col
+				self:CrushOneBlock(index)
+			end
+		end
+
+	elseif crush_row and crush_col then               --都有  
+		if #row_checklist + #col_checklist == 4 then
+			--[[  
+				  #
+				  #
+				  ###
+
+ 				   #
+				   #
+				  ###
+
+				  #
+				 ###
+				  #
+				   
+			--]]
+			-- 消除one line
+			for row=1,ROW do
+				local index = (row-1)*COL + checkblock_col
+				self:CrushOneBlock(index)
+			end
+			-- 消除one line
+			for col=1,COL do
+				local index = (checkblock_row-1)*COL + col
+				self:CrushOneBlock(index)
+			end
+		elseif #row_checklist + #col_checklist == 5 then
+			--[[  
+				  #
+				  #
+				 ####
+
+				  #
+				 ###
+				  #
+				  #
+				   
+			--]]
+			-- 消一类
+			self:CrushOneType()
+		elseif #row_checklist + #col_checklist == 6 then
+			--[[  
+				  #
+				  #
+				#####
+
+				  #
+				  #
+				 ###
+				  #
+				  #
+				   
+			--]]
+			self:ChangeOneType()
+		elseif #row_checklist + #col_checklist == 7 then
+			--[[  
+				  #
+				  #
+				#####
+				  #
+				   
+			--]]
+		elseif #row_checklist + #col_checklist == 8 then
+			--[[  
+				  #
+				  #
+				#####
+				  #
+				  #		   
+			--]]
+			-- 	全消
+			for index=1,#self.BlockSprites do
+				self:CrushOneBlock(index)
+			end
+		end
+
+	end
+
+
+
+end
+
+function PlayScene:CrushOne(  )
+	-- 随机消一个
+	local used = {}
+	for k,v in pairs(self.BlockSprites) do
+		if v then
+			table.insert(used, v.data.index)
+		end
+	end	
+
+	if #used == 0 then
+		return
+	end
+
+	local index = used[math.random(1, #used)]
+	self:CrushOneBlock(index)
+
+end
+
+function PlayScene:CrushOneType(  )
+	-- 随机消一类
+	local used = {}
+	for k,v in pairs(self.BlockSprites) do
+		if v and v.data.value ~= 13 then
+			table.insert(used, v.data.index)
+		end
+	end	
+
+	if #used == 0 then
+		return
+	end
+
+	local index = used[math.random(1, #used)]
+	local value = self.BlockSprites[index].data.value
+
+	for _,v in pairs(used) do
+		if self.BlockSprites[v].data.value == value then
+			self:CrushOneBlock(v)
+		end
+	end
+	
+
+end
+
+function PlayScene:ChangeOneType(  )
+	-- 随机消一类并替换为13
+	local used = {}
+	for k,v in pairs(self.BlockSprites) do
+		if v and v.data.value ~= 13 then
+			table.insert(used, v.data.index)
+		end
+	end	
+
+	if #used == 0 then
+		return
+	end
+
+	local index = used[math.random(1, #used)]
+	local value = self.BlockSprites[index].data.value
+
+	for _,v in pairs(used) do
+		if self.BlockSprites[v].data.value == value then
+			local data = clone(self.BlockSprites[v].data)
+			data.value = 13
+			self:CrushOneBlock(v)
+			self:CreateSpecialBlock(data)
+
+		end
+	end
+	
+
+end
+
+function PlayScene:CrushOneBlock( index )
+	if self.BlockSprites[index] then
+		self:UpdateScore(self.BlockSprites[index].data.value)
+
+		self.BlockSprites[index].data = nil
+		self.BlockSprites[index]:removeFromParent()
+		self.BlockSprites[index] = false	
+	end
 end
 
 function PlayScene:IndexToRowCol( index )
