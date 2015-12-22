@@ -38,11 +38,22 @@ end
 function PlayScene:CreateBackground(  )
 	local background = cc.LayerColor:create(cc.c4b(255,255,255,255))
 
-	self.label_playScore = cc.Label:createWithSystemFont("0", "", 30)
+	self.label_playScore = cc.Label:createWithSystemFont("0", "", 50)
 		:setColor(cc.c3b(0,0,0))
-		:move(display.right-50, display.top-50)
+		:move(display.right-50, display.cy+PLAY_LAYER_HEIGHT*0.5+20)
 		:addTo(background)
-		:setAnchorPoint(1,1)
+		:setAnchorPoint(1,0)
+
+	local restart = ccui.Button:create("restart.png")
+	restart:setAnchorPoint(0,0)
+	restart:setScale(0.2)
+	background:addChild(restart)
+	restart:setPosition(50, display.cy+PLAY_LAYER_HEIGHT*0.5+20)
+	restart:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+			self:ResetGame()
+		end
+	end)
 
 	return background
 end
@@ -188,9 +199,12 @@ end
 
 function PlayScene:ResetGame(  )
 	for k,v in pairs(self.BlockSprites) do
-		v.data = nil
-		v:removeFromParent()
-		v = nil
+		if v then
+			v.data = nil
+			v:removeFromParent()
+			v = false
+		end
+
 	end
 	-- 数据初始化
 	self:InitPlayData()
@@ -270,8 +284,8 @@ function PlayScene:RandomCreateBlock(  )
 	data.col = col
 	data.posx = posx
 	data.posy = posy
-	data.value = math.random(1,12)
-	data.value = math.random(1,12)
+	data.value = math.random(1,10)
+	data.value = math.random(1,10)
 
 	self:CreateSpecialBlock(data)
 
@@ -506,9 +520,10 @@ function PlayScene:CheckAndCrush(checkblock)
 				  #		   
 			--]]
 			-- 	全消
-			for index=1,#self.BlockSprites do
-				self:CrushOneBlock(index)
-			end
+			-- for index=1,#self.BlockSprites do
+			-- 	self:CrushOneBlock(index)
+			-- end
+			self:ChangeOneZone(checkblock_row, checkblock_col)
 		end
 
 	end
@@ -589,8 +604,58 @@ function PlayScene:ChangeOneType(  )
 
 end
 
+
+function PlayScene:ChangeOneZone( checkrow, checkcol )
+
+	for col=checkcol-2,checkcol+2 do
+		for row=checkrow-2,checkrow+2 do
+			if col ~= checkcol and row ~= checkrow then
+				local idx = (row-1)*COL+col
+				if self.BlockSprites[idx] then
+					local data = clone(self.BlockSprites[idx].data)
+					data.value = 13
+					self:CrushOneBlock(idx)
+					self:CreateSpecialBlock(data)
+				else
+					local x, y = self:RowColToPosition(row, col)
+					local data = {
+						index = idx,
+						row = row,
+						col = col,
+						posx = x,
+						posy = y,
+						value = 13,
+					}
+					self:CreateSpecialBlock(data)
+				end
+			end
+		end
+	end
+
+end
+
+
 function PlayScene:CrushOneBlock( index )
 	if self.BlockSprites[index] then
+
+	    
+	    local startPoint = cc.p(self.BlockSprites[index].data.posx, self.BlockSprites[index].data.posy+(self.playLayer:getPositionY()-PLAY_LAYER_HEIGHT*0.5))
+	    local endPoint = cc.p( self.label_playScore:getPositionX()-self.label_playScore:getContentSize().width*0.5, self.label_playScore:getPositionY()+20)
+	    local centerPoint = cc.p((endPoint.x - startPoint.x)*0.5, (endPoint.y - startPoint.y)*0.5+20 )
+	    
+		local bezier = {
+			startPoint,
+			centerPoint,
+			endPoint,
+		}
+
+		local emitter = cc.ParticleFlower:create()
+		emitter:setLife(2)
+		emitter:setTexture(cc.Director:getInstance():getTextureCache():addImage("particle_stars.png"))
+		emitter:setPosition(startPoint)
+		emitter:runAction( cc.Sequence:create( cc.BezierTo:create(1, bezier), cc.DelayTime:create(3), cc.RemoveSelf:create() ))
+		self:addChild(emitter)
+
 		self:UpdateScore(self.BlockSprites[index].data.value)
 
 		self.BlockSprites[index].data = nil
