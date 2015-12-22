@@ -5,6 +5,7 @@
 
 local PlayScene = class("PlayScene", cc.load("mvc").ViewBase)
 local Timer = cc.Director:getInstance():getScheduler()
+local UserData = cc.UserDefault:getInstance()
 
 
 local ROW = 7
@@ -16,14 +17,24 @@ local BLOCK_HEIGHT = PLAY_LAYER_HEIGHT / ROW
 local HALF_BLOCK_WIDTH = BLOCK_WIDTH * 0.5
 local HALF_BLOCK_HEIGHT = BLOCK_HEIGHT * 0.5
 local GAME_OVER_CONDITION = ROW * COL * 7
+local COST_MONEY = 5
 
 function PlayScene:onCreate()
 
+	-- self.money = UserData:getIntegerForKey("money")
+	-- if not self.money or self.money == 0 then
+	-- 	self.money = 100
+	-- end
+
+	self.money = 100
 
 	self:CreateBackground():addTo(self)
 
 	-- play数据初始化
-	self:InitPlayData()
+	if not self:InitPlayData() then
+		return
+	end
+
     self:CreatePlayLayer(PLAY_LAYER_WIDTH, PLAY_LAYER_HEIGHT):addTo(self):move(display.cx, display.cy)
 
     --- 内存定时清理
@@ -40,20 +51,26 @@ function PlayScene:CreateBackground(  )
 
 	self.label_playScore = cc.Label:createWithSystemFont("0", "", 50)
 		:setColor(cc.c3b(0,0,0))
-		:move(display.right-50, display.cy+PLAY_LAYER_HEIGHT*0.5+20)
+		:move(display.right-50, display.cy+PLAY_LAYER_HEIGHT*0.5+40)
 		:addTo(background)
-		:setAnchorPoint(1,0)
+		:setAnchorPoint(1,0.5)
 
-	local restart = ccui.Button:create("restart.png")
-	restart:setAnchorPoint(0,0)
-	restart:setScale(0.2)
-	background:addChild(restart)
-	restart:setPosition(50, display.cy+PLAY_LAYER_HEIGHT*0.5+20)
-	restart:addTouchEventListener(function ( event, eventType )
-		if eventType == ccui.TouchEventType.ended then
-			self:ResetGame()
-		end
-	end)
+	self.label_money = cc.Label:createWithSystemFont("0", "", 50)
+		:setColor(cc.c3b(255,0,0))
+		:move(50, display.cy+PLAY_LAYER_HEIGHT*0.5+40)
+		:addTo(background,1)
+		:setAnchorPoint(0,0.5)
+
+	-- local restart = ccui.Button:create("restart.png")
+	-- restart:setAnchorPoint(0,0)
+	-- restart:setScale(0.2)
+	-- background:addChild(restart)
+	-- restart:setPosition(50, display.cy+PLAY_LAYER_HEIGHT*0.5+20)
+	-- restart:addTouchEventListener(function ( event, eventType )
+	-- 	if eventType == ccui.TouchEventType.ended then
+	-- 		self:ResetGame()
+	-- 	end
+	-- end)
 
 	return background
 end
@@ -207,8 +224,9 @@ function PlayScene:ResetGame(  )
 
 	end
 	-- 数据初始化
-	self:InitPlayData()
-
+	if not self:InitPlayData() then
+		return
+	end
 
 	self:RefreshNext()
 end
@@ -226,13 +244,28 @@ function PlayScene:InitPlayData(  )
 
 	self.sourceBlockIndex = nil
 	self.playScore = 0
+	if self.money - COST_MONEY < 0 then
+		return false
+	end
+	self.money = self.money - COST_MONEY
+	UserData:setIntegerForKey("money", self.money)
+	self.label_money:setString(self.money)
+
+
 	self.label_playScore:setString(self.playScore)
 
+	return true
 end
 
 function PlayScene:UpdateScore( score )
 	self.playScore = self.playScore + score
 	self.label_playScore:setString(self.playScore)
+end
+
+function PlayScene:UpdateMoney( )
+	self.money = self.money + 1
+	self.label_money:setString(self.money)
+	UserData:setIntegerForKey("money", self.money)
 end
 
 function PlayScene:CreateGameOverLayer(  )
@@ -291,16 +324,7 @@ function PlayScene:RandomCreateBlock(  )
 
 	if #unused == 1 then
 		-- 下一次没有空位了
-		local totalvalue = 0
-		for k,v in pairs(self.BlockSprites) do
-			totalvalue = totalvalue + v.data.value
-		end
-		-- 检查是不是游戏失败了
-		if totalvalue >= GAME_OVER_CONDITION then
-			-- 弹出游戏结束界面
-			self:CreateGameOverLayer()
-
-		end
+		self:CreateGameOverLayer()
 	end
 
 end
@@ -638,23 +662,29 @@ end
 function PlayScene:CrushOneBlock( index )
 	if self.BlockSprites[index] then
 
-	    
-	    local startPoint = cc.p(self.BlockSprites[index].data.posx, self.BlockSprites[index].data.posy+(self.playLayer:getPositionY()-PLAY_LAYER_HEIGHT*0.5))
-	    local endPoint = cc.p( self.label_playScore:getPositionX()-self.label_playScore:getContentSize().width*0.5, self.label_playScore:getPositionY()+20)
-	    local centerPoint = cc.p((endPoint.x - startPoint.x)*0.5, (endPoint.y - startPoint.y)*0.5+20 )
-	    
-		local bezier = {
-			startPoint,
-			centerPoint,
-			endPoint,
-		}
+		if self.BlockSprites[index].data.value == 13 then
+			
+		    local startPoint = cc.p(self.BlockSprites[index].data.posx, self.BlockSprites[index].data.posy+(self.playLayer:getPositionY()-PLAY_LAYER_HEIGHT*0.5))
+		    local endPoint = cc.p( self.label_money:getPositionX()+self.label_money:getContentSize().width*0.5, self.label_money:getPositionY())
+		    local centerPoint = cc.p((startPoint.x - endPoint.x)*0.5, (endPoint.y - startPoint.y)*0.5+20 )
+		    
+			local bezier = {
+				startPoint,
+				centerPoint,
+				endPoint,
+			}
 
-		local emitter = cc.ParticleFlower:create()
-		emitter:setLife(2)
-		emitter:setTexture(cc.Director:getInstance():getTextureCache():addImage("particle_stars.png"))
-		emitter:setPosition(startPoint)
-		emitter:runAction( cc.Sequence:create( cc.BezierTo:create(1, bezier), cc.DelayTime:create(3), cc.RemoveSelf:create() ))
-		self:addChild(emitter)
+			local emitter = cc.ParticleFlower:create()
+			emitter:setLife(1)
+			emitter:setTexture(cc.Director:getInstance():getTextureCache():addImage("particle_stars.png"))
+			emitter:setPosition(startPoint)
+			emitter:runAction( cc.Sequence:create( cc.BezierTo:create(1, bezier), cc.DelayTime:create(1.2), cc.RemoveSelf:create() ))
+			self:addChild(emitter)	
+
+			self:UpdateMoney()		
+		end
+	    
+
 
 		self:UpdateScore(self.BlockSprites[index].data.value)
 
