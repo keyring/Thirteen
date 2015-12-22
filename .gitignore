@@ -1,2 +1,8 @@
 frameworks/cocos2d-x
 runtime/mac
+frameworks/runtime-src/proj.win32/.vs
+frameworks/runtime-src/proj.win32/Debug.win32
+frameworks/runtime-src/proj.win32/Release.win32
+simulator/
+
+*sdf
