@@ -535,6 +535,7 @@ function PlayScene:CheckAndCrush(checkblock)
 				  #
 				   
 			--]]
+            self:ChangeSomeone(3)
 		elseif #row_checklist + #col_checklist == 8 then
 			--[[  
 				  #
@@ -628,33 +629,70 @@ function PlayScene:ChangeOneType(  )
 
 end
 
+function PlayScene:ChangeSomeone( count )
+	local used = {}
+	for k,v in pairs(self.BlockSprites) do
+		if v and v.data.value ~= 13 then
+			table.insert(used, v.data.index)
+		end
+	end	
+
+	if #used == 0 then
+		return
+	end
+    
+    if #used <= count then
+        for _,v in pairs(used) do
+            local data = clone(self.BlockSprites[v].data)
+            data.value = 13
+            self:CrushOneBlock(v)
+            self:CreateSpecialBlock(data)
+        end
+    else
+        local selected = {}
+        for i=1,count do
+            local idx = math.random( 1, #used )
+            table.insert( selected, used[idx] )
+            table.remove( used, idx )
+        end
+        for _,v in pairs(selected) do
+            local data = clone(self.BlockSprites[v].data)
+            data.value = 13
+            self:CrushOneBlock(v)
+            self:CreateSpecialBlock(data)
+        end
+        selected = nil
+    end
+end
 
 function PlayScene:ChangeOneZone( checkrow, checkcol )
+	local delta_row = {-2, 2, 0, -2, 2}
+	local delta_col = {-2, 2, 0, 2, -2}
 
-	for col=checkcol-2,checkcol+2 do
-		for row=checkrow-2,checkrow+2 do
-			if col ~= checkcol and row ~= checkrow then
-				local idx = (row-1)*COL+col
-				if self.BlockSprites[idx] then
-					local data = clone(self.BlockSprites[idx].data)
-					data.value = 13
-					self:CrushOneBlock(idx)
-					self:CreateSpecialBlock(data)
-				else
-					local x, y = self:RowColToPosition(row, col)
-					local data = {
-						index = idx,
-						row = row,
-						col = col,
-						posx = x,
-						posy = y,
-						value = 13,
-					}
-					self:CreateSpecialBlock(data)
-				end
-			end
-		end
-	end
+    for i =1, 4 do
+        local row = checkrow+delta_row[i]
+        local col = checkcol+delta_col[i]
+        local idx = (row-1)*COL+col
+        if self.BlockSprites[idx] then
+            local data = clone(self.BlockSprites[idx].data)
+            data.value = 13
+            self:CrushOneBlock(idx)
+            self:CreateSpecialBlock(data)
+        else
+        	local x, y = self:RowColToPosition(row, col)
+        	local data = {
+        		index = idx,
+        		row = row,
+        		col = col,
+        		posx = x,
+        		posy = y,
+        		value = 13,
+        	}
+        	self:CreateSpecialBlock(data)
+        end
+    end
+
+
 
 end
 
