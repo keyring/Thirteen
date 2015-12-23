@@ -49,6 +49,12 @@ end
 function PlayScene:CreateBackground(  )
 	local background = cc.LayerColor:create(cc.c4b(255,255,255,255))
 
+	local backimage = display.newSprite("bg.png"):move(display.cx, display.cy):addTo(background)
+	local image_size = backimage:getContentSize()
+	backimage:setScaleX(display.width/image_size.width)
+	backimage:setScaleY(display.height/image_size.height)
+
+
 	self.label_playScore = cc.Label:createWithSystemFont("0", "", 50)
 		:setColor(cc.c3b(0,0,0))
 		:move(display.right-50, display.cy+PLAY_LAYER_HEIGHT*0.5+40)
@@ -76,7 +82,7 @@ function PlayScene:CreateBackground(  )
 end
 
 function PlayScene:CreatePlayLayer( width, height )
-	local layer = cc.LayerColor:create(cc.c4b(255,255,255,255), width, height)
+	local layer = cc.LayerColor:create(cc.c4b(0,0,0,0), width, height)
 	layer:ignoreAnchorPointForPosition(false)
 	self.playLayer = layer
 
@@ -183,7 +189,7 @@ function PlayScene:CreatePlayLayer( width, height )
 	        	self:UpdateScore(self.BlockSprites[target_index].data.value)
 				
 				if self.BlockSprites[target_index].data.value == 13 then
-					self.BlockSprites[target_index].label:setColor(cc.c3b(255,0,0))
+					self.BlockSprites[target_index]:setTexture("block13.png")
 					self:CheckAndCrush(self.BlockSprites[target_index])
 				end
 
@@ -330,7 +336,7 @@ function PlayScene:RandomCreateBlock(  )
 end
 
 function PlayScene:CreateSpecialBlock( data )
-	local block = display.newSprite("block13.png")
+	local block = display.newSprite("block.png")
 		:move(data.posx, data.posy)
 		:addTo(self.playLayer)
 
@@ -344,7 +350,8 @@ function PlayScene:CreateSpecialBlock( data )
 	self.BlockSprites[block.data.index] = block
 
 	if block.data.value == 13 then
-		self.BlockSprites[block.data.index].label:setColor(cc.c3b(255,0,0))
+		block:setTexture("block13.png")
+		-- self.BlockSprites[block.data.index].label:setColor(cc.c3b(255,0,0))
 		self:CheckAndCrush(self.BlockSprites[data.index])
 	end
 	
