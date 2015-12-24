@@ -496,16 +496,22 @@ function PlayScene:CheckAndCrush(checkblock)
 				  #
 				   
 			--]]
-			-- 消除one line
-			for row=1,ROW do
-				local index = (row-1)*COL + checkblock_col
-				self:CrushOneBlock(index)
+			-- 随机消除one line 行或列
+			local r = math.random(1,2)
+			if r == 1 then
+				for row=1,ROW do
+					local index = (row-1)*COL + checkblock_col
+					self:CrushOneBlock(index)
+				end
+			elseif r == 2 then
+				-- 消除one line
+				for col=1,COL do
+					local index = (checkblock_row-1)*COL + col
+					self:CrushOneBlock(index)
+				end
 			end
-			-- 消除one line
-			for col=1,COL do
-				local index = (checkblock_row-1)*COL + col
-				self:CrushOneBlock(index)
-			end
+
+
 		elseif #row_checklist + #col_checklist == 5 then
 			--[[  
 				  #
@@ -676,7 +682,7 @@ function PlayScene:ChangeOneZone( checkrow, checkcol )
 	local delta_row = {-2, 2, 0, -2, 2}
 	local delta_col = {-2, 2, 0, 2, -2}
 
-    for i =1, 4 do
+    for i =1, 5 do
         local row = checkrow+delta_row[i]
         local col = checkcol+delta_col[i]
         local idx = (row-1)*COL+col
