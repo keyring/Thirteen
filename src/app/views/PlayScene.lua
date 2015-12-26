@@ -37,13 +37,6 @@ function PlayScene:onCreate()
 
     self:CreatePlayLayer(PLAY_LAYER_WIDTH, PLAY_LAYER_HEIGHT):addTo(self):move(display.cx, display.cy)
 
-    --- 内存定时清理
-	self.cleanerTimer = Timer:scheduleScriptFunc(function (  )
-	    -- print("------------memory1-----------:", collectgarbage("count"))
-	    collectgarbage("collect")
-	    -- print("------------memory2-----------:", collectgarbage("count"))
-	end,60,false)
-
 end
 
 function PlayScene:CreateBackground(  )
