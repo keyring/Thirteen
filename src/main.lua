@@ -6,6 +6,8 @@ cc.FileUtils:getInstance():addSearchPath("res/")
 require "config"
 require "cocos.init"
 
+require "app.AppConfig"
+
 local function main()
     require("app.MyApp"):create():run("PlayScene")
 end
