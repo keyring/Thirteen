@@ -905,7 +905,7 @@
 					"-image_base",
 					100000000,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.cure.Thirteen;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kode.Thirteen;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../cocos2d-x/cocos/platform/ios $(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -946,7 +946,7 @@
 					"-image_base",
 					100000000,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.cure.Thirteen;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kode.Thirteen;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../cocos2d-x/cocos/platform/ios $(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
