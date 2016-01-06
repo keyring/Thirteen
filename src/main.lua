@@ -9,7 +9,7 @@ require "cocos.init"
 require "app.AppConfig"
 
 local function main()
-    require("app.MyApp"):create():run("PlayScene")
+    require("app.MyApp"):create():run()
 end
 
 local status, msg = xpcall(main, __G__TRACKBACK__)
