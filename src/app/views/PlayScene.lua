@@ -677,7 +677,7 @@ function PlayScene:CrushOne(  )
 	-- 随机消一个
 	local used = {}
 	for k,v in pairs(self.BlockSprites) do
-		if v then
+		if v and v.data.value ~= 13 then
 			table.insert(used, v.data.index)
 		end
 	end	
