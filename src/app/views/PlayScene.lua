@@ -54,22 +54,80 @@ function PlayScene:CreateBackground(  )
 		:addTo(background)
 		:setAnchorPoint(1,0.5)
 
+
 	self.label_money = cc.Label:createWithSystemFont("0", APP_FONTNAME, 50)
-		:setColor(cc.c3b(255,0,0))
-		:move(50, display.cy+PLAY_LAYER_HEIGHT*0.5+40)
+		:setColor(cc.c3b(207,40,47))
+		:move(65, display.cy+PLAY_LAYER_HEIGHT*0.5+40)
 		:addTo(background,1)
 		:setAnchorPoint(0,0.5)
 
-	-- local restart = ccui.Button:create("restart.png")
-	-- restart:setAnchorPoint(0,0)
-	-- restart:setScale(0.2)
-	-- background:addChild(restart)
-	-- restart:setPosition(50, display.cy+PLAY_LAYER_HEIGHT*0.5+20)
-	-- restart:addTouchEventListener(function ( event, eventType )
+
+	display.newSprite("coin.png"):move(30,display.cy+PLAY_LAYER_HEIGHT*0.5+40)
+		:setScale(0.5)
+		:addTo(background)
+
+	local btn_back = ccui.Button:create("back.png")
+	background:addChild(btn_back)
+	btn_back:setPosition(display.width*0.1, display.top-45)
+	btn_back:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+			local view = require("app.views.MainScene").new()
+    		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
+		end
+	end)
+	local btn_rank = ccui.Button:create("rank.png")
+	background:addChild(btn_rank)
+	btn_rank:setScale(0.5)
+	btn_rank:setPosition(display.width*0.3, display.top-45)
+	btn_rank:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+
+		end
+	end)
+	-- local btn_shop = ccui.Button:create("shop.png")
+	-- background:addChild(btn_shop)
+	-- btn_shop:setPosition(display.width*0.5, display.top-45)
+	-- btn_shop:addTouchEventListener(function ( event, eventType )
 	-- 	if eventType == ccui.TouchEventType.ended then
-	-- 		self:ResetGame()
+
 	-- 	end
 	-- end)
+
+	local btn_help = ccui.Button:create("help.png")
+	background:addChild(btn_help)
+	btn_help:setPosition(display.width*0.5, display.top-45)
+	btn_help:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+			self:CreateGameHelpLayer()
+		end
+	end)
+
+	local btn_share = ccui.Button:create("icon_share.png")
+	background:addChild(btn_share)
+	btn_share:setPosition(display.width*0.7, display.top-45)
+	btn_share:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+
+		end
+	end)
+
+
+	local btn_rate = ccui.Button:create("rate.png")
+	background:addChild(btn_rate)
+	btn_rate:setPosition(display.width*0.9, display.top-45)
+	btn_rate:addTouchEventListener(function ( event, eventType )
+		if eventType == ccui.TouchEventType.ended then
+
+		end
+	end)
+
+
+
+	display.newSprite("effect.png"):move(display.cx, 20)
+		:setAnchorPoint(0.5,0)
+		:addTo(background)
+
+
 
 	return background
 end
@@ -268,13 +326,24 @@ function PlayScene:UpdateMoney( )
 end
 
 function PlayScene:CreateGameOverLayer(  )
-	local layer = cc.LayerColor:create(cc.c4b(255,255,255,180))
+	local layer = cc.LayerColor:create(cc.c4b(255,255,255,200))
 	self:addChild(layer)
+
+	cc.Label:createWithSystemFont("Game Over!", APP_FONTNAME, 90)
+		:setColor(cc.c3b(0,0,0))
+		:move(display.center)
+		:addTo(layer)
+
+	cc.Label:createWithSystemFont(self.playScore, APP_FONTNAME, 90)
+		:setColor(cc.c3b(0,0,0))
+		:move(display.center)
+		:addTo(layer)
+
 
 	local restart = ccui.Button:create("restart.png")
 	layer:addChild(restart)
-	restart:setPosition(display.cx, display.top+50)
-	restart:runAction(cc.Sequence:create( cc.MoveTo:create(0.3, cc.p(display.cx, display.cy-50)), cc.MoveTo:create(0.05, cc.p(display.cx, display.cy)) ))
+	restart:setPosition(display.cx, display.cy-100)
+	-- restart:runAction(cc.Sequence:create( cc.MoveTo:create(0.2, cc.p(display.cx, display.cy-50)), cc.MoveTo:create(0.05, cc.p(display.cx, display.cy)) ))
 	restart:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
 			self:ResetGame()
@@ -282,6 +351,25 @@ function PlayScene:CreateGameOverLayer(  )
 		end
 	end)
 
+
+
+    local btn_rank = ccui.Button:create("rank.png")
+    btn_rank:setPosition(display.cx-100, display.cy-100)
+    layer:addChild(btn_rank)
+    btn_rank:addTouchEventListener(function ( sender, eventType )
+    	if eventType == ccui.TouchEventType.ended then
+
+    	end
+    end)
+
+    local btn_share = ccui.Button:create("share.png")
+    btn_share:setPosition(display.cx+100, display.cy-100)
+    layer:addChild(btn_share)
+    btn_share:addTouchEventListener(function ( sender, eventType )
+    	if eventType == ccui.TouchEventType.ended then
+
+    	end
+    end)
 
 	local listener = cc.EventListenerTouchOneByOne:create()
 	listener:setSwallowTouches(true)
@@ -292,6 +380,30 @@ function PlayScene:CreateGameOverLayer(  )
 	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
 end
 
+function PlayScene:CreateGameHelpLayer(  )
+	-- local layer = cc.LayerColor:create(cc.c4b(255,255,255,255))
+	local layer = cc.Layer:create()
+	self:addChild(layer)
+
+
+	local bg = display.newSprite("main_bg.jpg")
+	bg:setPosition(display.center)
+	layer:addChild(bg)
+	bg:setOpacity(0)
+	bg:runAction(cc.FadeIn:create(0.5))
+
+	local listener = cc.EventListenerTouchOneByOne:create()
+	listener:setSwallowTouches(true)
+	listener:registerScriptHandler(function ( event, eventType ) return true end, cc.Handler.EVENT_TOUCH_BEGAN)
+	listener:registerScriptHandler(function ( event, eventType ) bg:runAction(cc.Sequence:create( cc.FadeOut:create(0.5), cc.CallFunc:create(function (  )
+		layer:removeFromParent()
+		layer = nil
+	end) )) end, cc.Handler.EVENT_TOUCH_ENDED)
+
+
+	local eventDispatcher = self:getEventDispatcher()
+	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
+end
 
 function PlayScene:RandomCreateBlock(  )
 
