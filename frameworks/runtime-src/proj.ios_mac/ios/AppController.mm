@@ -30,6 +30,8 @@
 #import "AppDelegate.h"
 #import "RootViewController.h"
 #import "platform/ios/CCEAGLView-ios.h"
+#import "ios/IOSShareManager.h"
+#import "ios/DIAAchievement.h"
 
 @implementation AppController
 
@@ -80,6 +82,8 @@ static AppDelegate s_sharedApplication;
     [window makeKeyAndVisible];
 
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
+    sGameCenter->registerAchievementController();
+    [[IOSShareManager getInstance] setViewController:viewController];
 
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView(eaglView);
@@ -141,6 +145,7 @@ static AppDelegate s_sharedApplication;
 
 - (void)dealloc {
     [super dealloc];
+    sGameCenter->release();
 }
 
 
