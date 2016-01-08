@@ -77,7 +77,7 @@ function PlayScene:CreateBackground(  )
 	btn_rank:setPosition(display.width*0.3, display.top-45)
 	btn_rank:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-			ii.DIAAchievement:instance():openGameCenter()
+			-- ii.DIAAchievement:instance():openGameCenter()
 		end
 	end)
 	-- local btn_shop = ccui.Button:create("shop.png")
@@ -116,7 +116,7 @@ function PlayScene:CreateBackground(  )
 	btn_rate:setPosition(display.width*0.9, display.top-45)
 	btn_rate:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-			ii.IOSShare:goToAppStore()
+			-- ii.IOSShare:goToAppStore()
 		end
 	end)
 
@@ -429,7 +429,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
     btn_rate:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
-    		ii.IOSShare:goToAppStore()
+    		-- ii.IOSShare:goToAppStore()
     	end
     end)
 
@@ -449,8 +449,8 @@ function PlayScene:CreateGameOverLayer(  )
 
 
 
-	ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
-	ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
+	-- ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
+	-- ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
 
 end
 
@@ -986,7 +986,7 @@ function PlayScene:CaptureAndShare(  )
 
 	local function afterCaptured(succeed, outputFile)
         if succeed then
-            ii.IOSShare:share(300,300)
+            -- ii.IOSShare:share(300,300)
         end
     end
 
