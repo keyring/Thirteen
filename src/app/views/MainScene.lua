@@ -1,5 +1,6 @@
 
 local MainScene = class("MainScene", cc.load("mvc").ViewBase)
+local UserData = cc.UserDefault:getInstance()
 
 function MainScene:onCreate()
     -- add background image
@@ -18,8 +19,23 @@ function MainScene:onCreate()
     btn_start:setPosition(display.cx, display.cy-100)
     btn_start:setZoomScale(-0.05)
     self:addChild(btn_start)
+    btn_start:runAction(cc.RepeatForever:create( cc.Sequence:create( cc.ScaleTo:create(0.3, 1.1), cc.ScaleTo:create(0.2, 1) ) ))
     btn_start:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+
+		    local money = UserData:getIntegerForKey("money")
+			if not money then
+				money = 100
+				UserData:setIntegerForKey("money", money)
+			end
+
+			if money - 5 < 0 then
+				-- ShowFlashNotice("NOT Enough ")
+				-- return
+				money = money + 100
+				UserData:setIntegerForKey("money", money)
+			end
+
     		local view = require("app.views.PlayScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
     	end
