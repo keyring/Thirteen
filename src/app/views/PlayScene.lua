@@ -21,12 +21,9 @@ local COST_MONEY = 5
 
 function PlayScene:onCreate()
 
-	-- self.money = UserData:getIntegerForKey("money")
-	-- if not self.money or self.money == 0 then
-	-- 	self.money = 100
-	-- end
 
-	self.money = 100
+
+	self.money = UserData:getIntegerForKey("money")
 
 	self:CreateBackground():addTo(self)
 
@@ -77,11 +74,10 @@ function PlayScene:CreateBackground(  )
 	end)
 	local btn_rank = ccui.Button:create("rank.png")
 	background:addChild(btn_rank)
-	btn_rank:setScale(0.5)
 	btn_rank:setPosition(display.width*0.3, display.top-45)
 	btn_rank:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-
+			ii.DIAAchievement:instance():openGameCenter()
 		end
 	end)
 	-- local btn_shop = ccui.Button:create("shop.png")
@@ -102,12 +98,15 @@ function PlayScene:CreateBackground(  )
 		end
 	end)
 
-	local btn_share = ccui.Button:create("icon_share.png")
+
+
+	local btn_share = ccui.Button:create("share.png")
 	background:addChild(btn_share)
 	btn_share:setPosition(display.width*0.7, display.top-45)
 	btn_share:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-
+		    
+		    self:CaptureAndShare()
 		end
 	end)
 
@@ -117,16 +116,21 @@ function PlayScene:CreateBackground(  )
 	btn_rate:setPosition(display.width*0.9, display.top-45)
 	btn_rate:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-
+			ii.IOSShare:goToAppStore()
 		end
 	end)
 
-
-
-	display.newSprite("effect.png"):move(display.cx, 20)
-		:setAnchorPoint(0.5,0)
+	display.newSprite("line.png"):move(display.cx, display.top-85)
 		:addTo(background)
 
+
+	-- display.newSprite("effect.png"):move(display.cx, 20)
+	-- 	:setAnchorPoint(0.5,0)
+	-- 	:addTo(background)
+    cc.Label:createWithSystemFont("Thirteen", APP_FONTNAME, 100)
+    	:setColor(cc.c3b(207,40,47))
+        :move(display.cx, display.height*0.12)
+        :addTo(background)
 
 
 	return background
@@ -326,26 +330,78 @@ function PlayScene:UpdateMoney( )
 end
 
 function PlayScene:CreateGameOverLayer(  )
-	local layer = cc.LayerColor:create(cc.c4b(255,255,255,200))
+
+
+	local layer = cc.LayerColor:create(cc.c4b(255,255,255,250))
 	self:addChild(layer)
 
-	cc.Label:createWithSystemFont("Game Over!", APP_FONTNAME, 90)
-		:setColor(cc.c3b(0,0,0))
-		:move(display.center)
+	local score = UserData:getIntegerForKey("fenshu", 0)
+
+
+	cc.Label:createWithSystemFont("Game Over!", APP_FONTNAME, 80)
+		:setColor(cc.c3b(240,40,47))
+		:move(display.cx, display.top-200)
 		:addTo(layer)
 
-	cc.Label:createWithSystemFont(self.playScore, APP_FONTNAME, 90)
-		:setColor(cc.c3b(0,0,0))
-		:move(display.center)
+	display.newSprite("line.png"):move(display.cx, display.top-250)
 		:addTo(layer)
 
 
-	local restart = ccui.Button:create("restart.png")
-	layer:addChild(restart)
-	restart:setPosition(display.cx, display.cy-100)
-	-- restart:runAction(cc.Sequence:create( cc.MoveTo:create(0.2, cc.p(display.cx, display.cy-50)), cc.MoveTo:create(0.05, cc.p(display.cx, display.cy)) ))
-	restart:addTouchEventListener(function ( event, eventType )
+	-- if score < self.playScore then
+		UserData:setIntegerForKey("fenshu", self.playScore)
+
+		display.newSprite("newscore.png"):move(display.cx, display.top-250)
+			:setAnchorPoint(0.5,1)
+			:addTo(layer)
+	-- end
+
+
+	cc.Label:createWithSystemFont(self.playScore, APP_FONTNAME, 120)
+		:setColor(cc.c3b(0,0,0))
+		:move(display.cx, display.cy+100)
+		:addTo(layer)
+
+	local height = display.cy-240
+
+    local btn_home = ccui.Button:create("home.png")
+    btn_home:setOpacity(0)
+    -- btn_home:setAnchorPoint(0.5,0)
+    btn_home:setPosition(display.cx-200, height)
+    layer:addChild(btn_home)
+    btn_home:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
+    btn_home:addTouchEventListener(function ( sender, eventType )
+    	if eventType == ccui.TouchEventType.ended then
+			local view = require("app.views.MainScene").new()
+    		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
+    	end
+    end)
+
+    local btn_rank = ccui.Button:create("rank.png")
+    btn_rank:setOpacity(0)
+    -- btn_rank:setAnchorPoint(0.5,0)
+    btn_rank:setPosition(display.cx-120, height)
+    layer:addChild(btn_rank)
+    btn_rank:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
+    btn_rank:addTouchEventListener(function ( sender, eventType )
+    	if eventType == ccui.TouchEventType.ended then
+
+    	end
+    end)
+
+	local btn_restart = ccui.Button:create("restart.png")
+	-- btn_restart:setOpacity(0)
+	-- btn_restart:setAnchorPoint(0.5,0)
+	layer:addChild(btn_restart)
+	btn_restart:setPosition(display.cx, height+40)
+	-- btn_restart:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
+	btn_restart:runAction(cc.RepeatForever:create(cc.RotateBy:create(3, 360)))
+	btn_restart:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			if self.money - 5 < 0 then
+				self.money = self.money + 100
+				UserData:setIntegerForKey("money", self.money)
+			end
+
 			self:ResetGame()
 			layer:removeFromParent()
 		end
@@ -353,23 +409,35 @@ function PlayScene:CreateGameOverLayer(  )
 
 
 
-    local btn_rank = ccui.Button:create("rank.png")
-    btn_rank:setPosition(display.cx-100, display.cy-100)
-    layer:addChild(btn_rank)
-    btn_rank:addTouchEventListener(function ( sender, eventType )
-    	if eventType == ccui.TouchEventType.ended then
-
-    	end
-    end)
-
     local btn_share = ccui.Button:create("share.png")
-    btn_share:setPosition(display.cx+100, display.cy-100)
+    btn_share:setOpacity(0)
+	-- btn_share:setAnchorPoint(0.5,0)
+    btn_share:setPosition(display.cx+120, height)
     layer:addChild(btn_share)
+    btn_share:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
     btn_share:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
-
+    		self:CaptureAndShare()
     	end
     end)
+
+    local btn_rate = ccui.Button:create("rate.png")
+    btn_rate:setOpacity(0)
+    -- btn_rate:setAnchorPoint(0.5,0)
+    btn_rate:setPosition(display.cx+200, height)
+    layer:addChild(btn_rate)
+    btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
+    btn_rate:addTouchEventListener(function ( sender, eventType )
+    	if eventType == ccui.TouchEventType.ended then
+    		ii.IOSShare:goToAppStore()
+    	end
+    end)
+
+
+	display.newSprite("line.png"):move(display.cx, height-50)
+		:addTo(layer)
+
+
 
 	local listener = cc.EventListenerTouchOneByOne:create()
 	listener:setSwallowTouches(true)
@@ -378,6 +446,12 @@ function PlayScene:CreateGameOverLayer(  )
 
 	local eventDispatcher = self:getEventDispatcher()
 	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
+
+
+
+	ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
+	ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
+
 end
 
 function PlayScene:CreateGameHelpLayer(  )
@@ -450,7 +524,8 @@ function PlayScene:CreateSpecialBlock( data )
 	-- block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
 	-- block:addChild(block.label)
 	block:setTexture(block.data.value..".png")
-	block:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2),  cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
+	block:setScale(0)
+	block:runAction( cc.ScaleTo:create(0.3, 1) )
 
 	self.BlockSprites[block.data.index] = block
 
@@ -866,6 +941,56 @@ end
 
 function PlayScene:PositionToRowCol( pos )
 	return math.ceil(pos.y/BLOCK_HEIGHT), math.ceil(pos.x/BLOCK_WIDTH)
+end
+
+function PlayScene:CaptureAndShare(  )
+	-- local layer = cc.LayerColor:create(cc.c4b(52,56,255,255),display.width, display.height)
+	-- layer:setScale(0.5)
+	-- local playlayer = clone(self.playLayer)
+
+	-- playlayer:setPosition(0,200)
+	-- layer:addChild(playlayer)
+
+	-- local score = cc.Label:createWithSystemFont(self.playScore, APP_FONTNAME, 100)
+	-- 	:setColor(cc.c3b(207,40,47))
+	-- 	:setScale(0.5)
+	-- 	:move(display.cx, display.top-200)
+	-- 	-- :addTo(layer)
+
+ --    local title = cc.Label:createWithSystemFont("Thirteen", APP_FONTNAME, 100)
+ --    	:setColor(cc.c3b(207,40,47))
+ --        :move(display.cx, 300)
+ --        :setScale(0.5)
+ --        -- :addTo(layer)
+
+ --    self.playLayer:setScale(0.5)
+ --    self.playLayer:setAnchorPoint(0,0)
+ --    local size = cc.Director:getInstance():getWinSize()
+	-- local target = cc.RenderTexture:create(size.width, size.height, cc.TEXTURE2_D_PIXEL_FORMAT_RGB_A8888)
+	-- -- target:setScale(0.5)
+	-- target:clear(math.random(), math.random(), math.random(), math.random())
+	-- target:begin()
+
+	-- self.playLayer:visit()
+	-- score:visit()
+	-- title:visit()
+
+	-- target:endToLua()
+	-- target:saveToFile("CaptureScreen.png", cc.IMAGE_FORMAT_PNG)
+
+
+	-- ii.IOSShare:share(300,300)
+
+	-- self.playLayer:setScale(1)
+	-- self.playLayer:setAnchorPoint(0.5,0.5)
+
+	local function afterCaptured(succeed, outputFile)
+        if succeed then
+            ii.IOSShare:share(300,300)
+        end
+    end
+
+    cc.utils:captureScreen(afterCaptured, "CaptureScreen.png")
 end
 
 return PlayScene
