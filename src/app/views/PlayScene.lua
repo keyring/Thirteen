@@ -460,7 +460,7 @@ function PlayScene:CreateGameHelpLayer(  )
 	self:addChild(layer)
 
 
-	local bg = display.newSprite("main_bg.jpg")
+	local bg = display.newSprite("howtoplay.png")
 	bg:setPosition(display.center)
 	layer:addChild(bg)
 	bg:setOpacity(0)
