@@ -18,10 +18,9 @@ local HALF_BLOCK_WIDTH = BLOCK_WIDTH * 0.5
 local HALF_BLOCK_HEIGHT = BLOCK_HEIGHT * 0.5
 local GAME_OVER_CONDITION = ROW * COL * 7
 local COST_MONEY = 5
+local RANDOM_BLOCK_COUNT = 2
 
 function PlayScene:onCreate()
-
-
 
 	self.money = UserData:getIntegerForKey("money")
 
@@ -269,7 +268,7 @@ end
 
 function PlayScene:RefreshNext(  )
 	-- 可以随着分数的上涨增加难度，即同时多出现几个
-	for i=1,2 do
+	for i=1,RANDOM_BLOCK_COUNT do
 		self:RandomCreateBlock()
 	end
 	
@@ -675,20 +674,22 @@ function PlayScene:CheckAndCrush(checkblock)
 				   
 			--]]
 			-- 随机消除one line 行或列
-			local r = math.random(1,2)
-			if r == 1 then
-				for row=1,ROW do
-					local index = (row-1)*COL + checkblock_col
-					self:CrushOneBlock(index)
-				end
-			elseif r == 2 then
-				-- 消除one line
-				for col=1,COL do
-					local index = (checkblock_row-1)*COL + col
-					self:CrushOneBlock(index)
-				end
-			end
+			-- local r = math.random(1,2)
+			-- if r == 1 then
+			-- 	for row=1,ROW do
+			-- 		local index = (row-1)*COL + checkblock_col
+			-- 		self:CrushOneBlock(index)
+			-- 	end
+			-- elseif r == 2 then
+			-- 	-- 消除one line
+			-- 	for col=1,COL do
+			-- 		local index = (checkblock_row-1)*COL + col
+			-- 		self:CrushOneBlock(index)
+			-- 	end
+			-- end
 
+			-- 消一类
+			self:CrushOneType()
 
 		elseif #row_checklist + #col_checklist == 5 then
 			--[[  
@@ -702,8 +703,18 @@ function PlayScene:CheckAndCrush(checkblock)
 				  #
 				   
 			--]]
-			-- 消一类
-			self:CrushOneType()
+
+			local posx, posy = self:RowColToPosition(checkblock_row, checkblock_col)
+
+			local data = {}
+			data.index = checkblock_index
+			data.row = checkblock_row
+			data.col = checkblock_col
+			data.posx = posx
+			data.posy = posy
+			data.value = 13
+
+		    self:CreateSpecialBlock(data)
 		elseif #row_checklist + #col_checklist == 6 then
 			--[[  
 				  #
@@ -817,6 +828,10 @@ function PlayScene:ChangeOneType(  )
 		end
 	end
 	
+
+end
+
+function PlayScene:ChangeOne( data )
 
 end
 
