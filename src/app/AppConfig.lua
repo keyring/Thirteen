@@ -10,8 +10,13 @@ else
 	cc.exports.APP_FONTNAME = "DFPWaWaW5-GB.ttf"
 end
 
+
+display.loadSpriteFrames("pack.plist", "pack.png")
+
+
 audio.preloadSound("click.wav")
 audio.preloadSound("crush.wav")
+
 
 
 -- local flashNoticeOffsetStack = {}

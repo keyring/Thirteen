@@ -6,3 +6,4 @@ frameworks/runtime-src/proj.win32/Release.win32
 simulator/
 
 *sdf
+*.xcbkptlist
