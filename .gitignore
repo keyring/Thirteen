@@ -7,3 +7,5 @@ simulator/
 
 *sdf
 *.xcbkptlist
+
+*.luac
