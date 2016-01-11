@@ -87,6 +87,10 @@ static UIViewController* currentModalViewController = nil;
 - (void) showLeaderboard
 {
     if (!gameCenterAvailable) return;
+    if (!userAuthenticated) {
+        return;
+    }
+    
     
     GKLeaderboardViewController *leaderboardController = [[GKLeaderboardViewController alloc] init];
     if (leaderboardController != nil) {
