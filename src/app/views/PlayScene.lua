@@ -71,8 +71,8 @@ function PlayScene:CreateBackground(  )
 		if eventType == ccui.TouchEventType.ended then
 			audio.playSound("click.wav", false)
 
-			ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
-			ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
+			ii.DIAAchievement:instance():reportScore(self.playScore, "grp.thirteen_score")
+			ii.DIAAchievement:instance():reportScore(self.money, "grp.thirteen_coin")
 
 			local view = require("app.views.MainScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
@@ -407,6 +407,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_rank:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
     		audio.playSound("click.wav", false)
+    		ii.DIAAchievement:instance():openGameCenter()
     	end
     end)
 
@@ -473,8 +474,8 @@ function PlayScene:CreateGameOverLayer(  )
 	local eventDispatcher = self:getEventDispatcher()
 	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
 
-	ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
-	ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
+	ii.DIAAchievement:instance():reportScore(self.playScore, "grp.thirteen_score")
+	ii.DIAAchievement:instance():reportScore(self.money, "grp.thirteen_coin")
 
 end
 
