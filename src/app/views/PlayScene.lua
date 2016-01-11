@@ -58,11 +58,12 @@ function PlayScene:CreateBackground(  )
 		:setAnchorPoint(0,0.5)
 
 
-	display.newSprite("coin.png"):move(30,display.cy+PLAY_LAYER_HEIGHT*0.5+40)
+	display.newSprite("#coin.png"):move(30,display.cy+PLAY_LAYER_HEIGHT*0.5+40)
 		:setScale(0.5)
 		:addTo(background)
 
-	local btn_back = ccui.Button:create("back.png")
+	local btn_back = ccui.Button:create()
+	btn_back:loadTextureNormal("back.png", ccui.TextureResType.plistType)
 	background:addChild(btn_back)
 	btn_back:setPosition(display.width*0.1, display.top-45)
 	btn_back:addTouchEventListener(function ( event, eventType )
@@ -72,7 +73,8 @@ function PlayScene:CreateBackground(  )
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
 		end
 	end)
-	local btn_rank = ccui.Button:create("rank.png")
+	local btn_rank = ccui.Button:create()
+	btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
 	background:addChild(btn_rank)
 	btn_rank:setPosition(display.width*0.3, display.top-45)
 	btn_rank:addTouchEventListener(function ( event, eventType )
@@ -90,7 +92,8 @@ function PlayScene:CreateBackground(  )
 	-- 	end
 	-- end)
 
-	local btn_help = ccui.Button:create("help.png")
+	local btn_help = ccui.Button:create()
+	btn_help:loadTextureNormal("help.png", ccui.TextureResType.plistType)
 	background:addChild(btn_help)
 	btn_help:setPosition(display.width*0.5, display.top-45)
 	btn_help:addTouchEventListener(function ( event, eventType )
@@ -102,7 +105,8 @@ function PlayScene:CreateBackground(  )
 
 
 
-	local btn_share = ccui.Button:create("share.png")
+	local btn_share = ccui.Button:create()
+	btn_share:loadTextureNormal("share.png", ccui.TextureResType.plistType)
 	background:addChild(btn_share)
 	btn_share:setPosition(display.width*0.7, display.top-45)
 	btn_share:addTouchEventListener(function ( event, eventType )
@@ -113,7 +117,8 @@ function PlayScene:CreateBackground(  )
 	end)
 
 
-	local btn_rate = ccui.Button:create("rate.png")
+	local btn_rate = ccui.Button:create()
+	btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
 	background:addChild(btn_rate)
 	btn_rate:setPosition(display.width*0.9, display.top-45)
 	btn_rate:addTouchEventListener(function ( event, eventType )
@@ -123,7 +128,7 @@ function PlayScene:CreateBackground(  )
 		end
 	end)
 
-	display.newSprite("line.png"):move(display.cx, display.top-85)
+	display.newSprite("#line.png"):move(display.cx, display.top-85)
 		:addTo(background)
 
 
@@ -147,7 +152,7 @@ function PlayScene:CreatePlayLayer( width, height )
 	-- 创建图块背景
 	for i=1,COL do
 		for j=1,ROW do
-			display.newSprite("block0.png")
+			display.newSprite("#block0.png")
 				:move(HALF_BLOCK_WIDTH+(i-1)*BLOCK_WIDTH, HALF_BLOCK_HEIGHT+(j-1)*BLOCK_HEIGHT)
 				:addTo(layer)
 		end
@@ -240,7 +245,7 @@ function PlayScene:CreatePlayLayer( width, height )
 	        else
 	        	-- 相加
 	        	self.BlockSprites[target_index].data.value = self.BlockSprites[target_index].data.value + self.BlockSprites[self.sourceBlockIndex].data.value
-	        	self.BlockSprites[target_index]:setTexture(self.BlockSprites[target_index].data.value..".png")
+	        	self.BlockSprites[target_index]:setSpriteFrame(self.BlockSprites[target_index].data.value..".png")
 
 				self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 	        	self.BlockSprites[self.sourceBlockIndex]:removeFromParent()
@@ -249,7 +254,7 @@ function PlayScene:CreatePlayLayer( width, height )
 	        	self:UpdateScore(self.BlockSprites[target_index].data.value)
 				
 				if self.BlockSprites[target_index].data.value == 13 then
-					self.BlockSprites[target_index]:setTexture("13.png")
+					self.BlockSprites[target_index]:setSpriteFrame("13.png")
 					self:CheckAndCrush(self.BlockSprites[target_index])
 				end
 
@@ -348,14 +353,14 @@ function PlayScene:CreateGameOverLayer(  )
 		:move(display.cx, display.top-200)
 		:addTo(layer)
 
-	display.newSprite("line.png"):move(display.cx, display.top-250)
+	display.newSprite("#line.png"):move(display.cx, display.top-250)
 		:addTo(layer)
 
 
 	-- if score < self.playScore then
 		UserData:setIntegerForKey("fenshu", self.playScore)
 
-		display.newSprite("newscore.png"):move(display.cx, display.top-250)
+		display.newSprite("#newscore.png"):move(display.cx, display.top-250)
 			:setAnchorPoint(0.5,1)
 			:addTo(layer)
 	-- end
@@ -368,7 +373,8 @@ function PlayScene:CreateGameOverLayer(  )
 
 	local height = display.cy-240
 
-    local btn_home = ccui.Button:create("home.png")
+    local btn_home = ccui.Button:create()
+    btn_home:loadTextureNormal("home.png", ccui.TextureResType.plistType)
     btn_home:setOpacity(0)
     -- btn_home:setAnchorPoint(0.5,0)
     btn_home:setPosition(display.cx-200, height)
@@ -382,7 +388,8 @@ function PlayScene:CreateGameOverLayer(  )
     	end
     end)
 
-    local btn_rank = ccui.Button:create("rank.png")
+    local btn_rank = ccui.Button:create()
+    btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
     btn_rank:setOpacity(0)
     -- btn_rank:setAnchorPoint(0.5,0)
     btn_rank:setPosition(display.cx-120, height)
@@ -394,7 +401,8 @@ function PlayScene:CreateGameOverLayer(  )
     	end
     end)
 
-	local btn_restart = ccui.Button:create("restart.png")
+	local btn_restart = ccui.Button:create()
+	btn_restart:loadTextureNormal("restart.png", ccui.TextureResType.plistType)
 	-- btn_restart:setOpacity(0)
 	-- btn_restart:setAnchorPoint(0.5,0)
 	layer:addChild(btn_restart)
@@ -416,7 +424,8 @@ function PlayScene:CreateGameOverLayer(  )
 
 
 
-    local btn_share = ccui.Button:create("share.png")
+    local btn_share = ccui.Button:create()
+    btn_share:loadTextureNormal("share.png", ccui.TextureResType.plistType)
     btn_share:setOpacity(0)
 	-- btn_share:setAnchorPoint(0.5,0)
     btn_share:setPosition(display.cx+120, height)
@@ -429,7 +438,8 @@ function PlayScene:CreateGameOverLayer(  )
     	end
     end)
 
-    local btn_rate = ccui.Button:create("rate.png")
+    local btn_rate = ccui.Button:create()
+    btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
     btn_rate:setOpacity(0)
     -- btn_rate:setAnchorPoint(0.5,0)
     btn_rate:setPosition(display.cx+200, height)
@@ -443,7 +453,7 @@ function PlayScene:CreateGameOverLayer(  )
     end)
 
 
-	display.newSprite("line.png"):move(display.cx, height-50)
+	display.newSprite("#line.png"):move(display.cx, height-50)
 		:addTo(layer)
 
 
@@ -524,7 +534,7 @@ function PlayScene:RandomCreateBlock(  )
 end
 
 function PlayScene:CreateSpecialBlock( data )
-	local block = display.newSprite()
+	local block = display.newSprite("#"..data.value..".png")
 		:move(data.posx, data.posy)
 		:addTo(self.playLayer)
 
@@ -532,7 +542,6 @@ function PlayScene:CreateSpecialBlock( data )
 
 	-- block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
 	-- block:addChild(block.label)
-	block:setTexture(block.data.value..".png")
 	block:setScale(0)
 	block:runAction( cc.ScaleTo:create(0.3, 1) )
 
