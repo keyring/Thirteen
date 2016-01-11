@@ -19,9 +19,10 @@ function MainScene:onCreate()
     btn_start:setPosition(display.cx, display.cy-100)
     btn_start:setZoomScale(-0.05)
     self:addChild(btn_start)
-    btn_start:runAction(cc.RepeatForever:create( cc.Sequence:create( cc.ScaleTo:create(0.3, 1.1), cc.ScaleTo:create(0.2, 1) ) ))
+    btn_start:runAction(cc.RepeatForever:create( cc.Sequence:create( cc.ScaleTo:create(0.3, 1.1), cc.ScaleTo:create(0.45, 1) ) ))
     btn_start:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+    		audio.playSound("click.wav", false)
 
 		    local money = UserData:getIntegerForKey("money")
 			if not money then

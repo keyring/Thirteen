@@ -18,9 +18,9 @@ local HALF_BLOCK_WIDTH = BLOCK_WIDTH * 0.5
 local HALF_BLOCK_HEIGHT = BLOCK_HEIGHT * 0.5
 local GAME_OVER_CONDITION = ROW * COL * 7
 local COST_MONEY = 5
+local RANDOM_BLOCK_COUNT = 2
 
 function PlayScene:onCreate()
-
 
 
 	self.money = UserData:getIntegerForKey("money")
@@ -68,6 +68,9 @@ function PlayScene:CreateBackground(  )
 	btn_back:setPosition(display.width*0.1, display.top-45)
 	btn_back:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
+			ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
+			ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
 			local view = require("app.views.MainScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
 		end
@@ -77,6 +80,7 @@ function PlayScene:CreateBackground(  )
 	btn_rank:setPosition(display.width*0.3, display.top-45)
 	btn_rank:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			ii.DIAAchievement:instance():openGameCenter()
 		end
 	end)
@@ -94,6 +98,7 @@ function PlayScene:CreateBackground(  )
 	btn_help:setPosition(display.width*0.5, display.top-45)
 	btn_help:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			self:CreateGameHelpLayer()
 		end
 	end)
@@ -105,7 +110,7 @@ function PlayScene:CreateBackground(  )
 	btn_share:setPosition(display.width*0.7, display.top-45)
 	btn_share:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-		    
+		    audio.playSound("click.wav", false)
 		    self:CaptureAndShare()
 		end
 	end)
@@ -116,6 +121,7 @@ function PlayScene:CreateBackground(  )
 	btn_rate:setPosition(display.width*0.9, display.top-45)
 	btn_rate:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			ii.IOSShare:goToAppStore()
 		end
 	end)
@@ -185,6 +191,8 @@ function PlayScene:CreatePlayLayer( width, height )
 		-- 目标不存在判断
 		-- 相加判断 > 13
 		-- 相加并修改UI
+		audio.playSound("click.wav", false)
+
 		local locationInNode = layer:convertToNodeSpace(touch:getLocation())
 		local s = layer:getContentSize()
 		local rect = cc.rect(0, 0, s.width, s.height)
@@ -269,7 +277,7 @@ end
 
 function PlayScene:RefreshNext(  )
 	-- 可以随着分数的上涨增加难度，即同时多出现几个
-	for i=1,2 do
+	for i=1,RANDOM_BLOCK_COUNT do
 		self:RandomCreateBlock()
 	end
 	
@@ -371,6 +379,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_home:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
     btn_home:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+    		audio.playSound("click.wav", false)
 			local view = require("app.views.MainScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
     	end
@@ -384,7 +393,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_rank:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
     btn_rank:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
-
+    		audio.playSound("click.wav", false)
     	end
     end)
 
@@ -397,6 +406,8 @@ function PlayScene:CreateGameOverLayer(  )
 	btn_restart:runAction(cc.RepeatForever:create(cc.RotateBy:create(3, 360)))
 	btn_restart:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+
+			audio.playSound("click.wav", false)
 			if self.money - 5 < 0 then
 				self.money = self.money + 100
 				UserData:setIntegerForKey("money", self.money)
@@ -417,6 +428,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_share:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
     btn_share:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+    		audio.playSound("click.wav", false)
     		self:CaptureAndShare()
     	end
     end)
@@ -429,6 +441,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
     btn_rate:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
     		ii.IOSShare:goToAppStore()
     	end
     end)
@@ -447,8 +460,6 @@ function PlayScene:CreateGameOverLayer(  )
 	local eventDispatcher = self:getEventDispatcher()
 	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
 
-
-
 	ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
 	ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
 
@@ -460,7 +471,7 @@ function PlayScene:CreateGameHelpLayer(  )
 	self:addChild(layer)
 
 
-	local bg = display.newSprite("main_bg.jpg")
+	local bg = display.newSprite("howtoplay.png")
 	bg:setPosition(display.center)
 	layer:addChild(bg)
 	bg:setOpacity(0)
@@ -610,9 +621,10 @@ function PlayScene:CheckAndCrush(checkblock)
 	local checkblock_row = checkblock.data.row
 	local checkblock_col = checkblock.data.col
 
-	if crush_row or crush_col then
-		self:CrushOneBlock(checkblock_index)
-	end
+	-- if crush_row or crush_col then
+	audio.playSound("crush.wav", false)
+	self:CrushOneBlock(checkblock_index)
+	-- end
 
 	if crush_row and not crush_col then                -- 只有横
 		if #row_checklist == 3 then    -- 四消       
@@ -675,20 +687,22 @@ function PlayScene:CheckAndCrush(checkblock)
 				   
 			--]]
 			-- 随机消除one line 行或列
-			local r = math.random(1,2)
-			if r == 1 then
-				for row=1,ROW do
-					local index = (row-1)*COL + checkblock_col
-					self:CrushOneBlock(index)
-				end
-			elseif r == 2 then
-				-- 消除one line
-				for col=1,COL do
-					local index = (checkblock_row-1)*COL + col
-					self:CrushOneBlock(index)
-				end
-			end
+			-- local r = math.random(1,2)
+			-- if r == 1 then
+			-- 	for row=1,ROW do
+			-- 		local index = (row-1)*COL + checkblock_col
+			-- 		self:CrushOneBlock(index)
+			-- 	end
+			-- elseif r == 2 then
+			-- 	-- 消除one line
+			-- 	for col=1,COL do
+			-- 		local index = (checkblock_row-1)*COL + col
+			-- 		self:CrushOneBlock(index)
+			-- 	end
+			-- end
 
+			-- 消一类
+			self:CrushOneType()
 
 		elseif #row_checklist + #col_checklist == 5 then
 			--[[  
@@ -702,8 +716,18 @@ function PlayScene:CheckAndCrush(checkblock)
 				  #
 				   
 			--]]
-			-- 消一类
-			self:CrushOneType()
+
+			local posx, posy = self:RowColToPosition(checkblock_row, checkblock_col)
+
+			local data = {}
+			data.index = checkblock_index
+			data.row = checkblock_row
+			data.col = checkblock_col
+			data.posx = posx
+			data.posy = posy
+			data.value = 13
+
+		    self:CreateSpecialBlock(data)
 		elseif #row_checklist + #col_checklist == 6 then
 			--[[  
 				  #
@@ -817,6 +841,10 @@ function PlayScene:ChangeOneType(  )
 		end
 	end
 	
+
+end
+
+function PlayScene:ChangeOne( data )
 
 end
 
@@ -986,7 +1014,9 @@ function PlayScene:CaptureAndShare(  )
 
 	local function afterCaptured(succeed, outputFile)
         if succeed then
+
             ii.IOSShare:share(300,300)
+
         end
     end
 
