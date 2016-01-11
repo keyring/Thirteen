@@ -67,6 +67,7 @@ function PlayScene:CreateBackground(  )
 	btn_back:setPosition(display.width*0.1, display.top-45)
 	btn_back:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			local view = require("app.views.MainScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
 		end
@@ -76,6 +77,7 @@ function PlayScene:CreateBackground(  )
 	btn_rank:setPosition(display.width*0.3, display.top-45)
 	btn_rank:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			-- ii.DIAAchievement:instance():openGameCenter()
 		end
 	end)
@@ -93,6 +95,7 @@ function PlayScene:CreateBackground(  )
 	btn_help:setPosition(display.width*0.5, display.top-45)
 	btn_help:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			self:CreateGameHelpLayer()
 		end
 	end)
@@ -104,7 +107,7 @@ function PlayScene:CreateBackground(  )
 	btn_share:setPosition(display.width*0.7, display.top-45)
 	btn_share:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
-		    
+		    audio.playSound("click.wav", false)
 		    self:CaptureAndShare()
 		end
 	end)
@@ -115,6 +118,7 @@ function PlayScene:CreateBackground(  )
 	btn_rate:setPosition(display.width*0.9, display.top-45)
 	btn_rate:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			-- ii.IOSShare:goToAppStore()
 		end
 	end)
@@ -184,6 +188,8 @@ function PlayScene:CreatePlayLayer( width, height )
 		-- 目标不存在判断
 		-- 相加判断 > 13
 		-- 相加并修改UI
+		audio.playSound("click.wav", false)
+
 		local locationInNode = layer:convertToNodeSpace(touch:getLocation())
 		local s = layer:getContentSize()
 		local rect = cc.rect(0, 0, s.width, s.height)
@@ -370,6 +376,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_home:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
     btn_home:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+    		audio.playSound("click.wav", false)
 			local view = require("app.views.MainScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
     	end
@@ -383,7 +390,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_rank:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
     btn_rank:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
-
+    		audio.playSound("click.wav", false)
     	end
     end)
 
@@ -396,6 +403,7 @@ function PlayScene:CreateGameOverLayer(  )
 	btn_restart:runAction(cc.RepeatForever:create(cc.RotateBy:create(3, 360)))
 	btn_restart:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
+			audio.playSound("click.wav", false)
 			if self.money - 5 < 0 then
 				self.money = self.money + 100
 				UserData:setIntegerForKey("money", self.money)
@@ -416,6 +424,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_share:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
     btn_share:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+    		audio.playSound("click.wav", false)
     		self:CaptureAndShare()
     	end
     end)
@@ -428,6 +437,7 @@ function PlayScene:CreateGameOverLayer(  )
     btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
     btn_rate:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
+    		audio.playSound("click.wav", false)
     		-- ii.IOSShare:goToAppStore()
     	end
     end)
@@ -609,9 +619,10 @@ function PlayScene:CheckAndCrush(checkblock)
 	local checkblock_row = checkblock.data.row
 	local checkblock_col = checkblock.data.col
 
-	if crush_row or crush_col then
-		self:CrushOneBlock(checkblock_index)
-	end
+	-- if crush_row or crush_col then
+	audio.playSound("crush.wav", false)
+	self:CrushOneBlock(checkblock_index)
+	-- end
 
 	if crush_row and not crush_col then                -- 只有横
 		if #row_checklist == 3 then    -- 四消       
