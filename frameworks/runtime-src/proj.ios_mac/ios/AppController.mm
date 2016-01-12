@@ -24,6 +24,7 @@
  ****************************************************************************/
 
 #import <UIKit/UIKit.h>
+#import <iAd/iAd.h>
 #import "cocos2d.h"
 
 #import "AppController.h"
@@ -85,10 +86,17 @@ static AppDelegate s_sharedApplication;
     sGameCenter->registerAchievementController();
     [[IOSShareManager getInstance] setViewController:viewController];
 
+    
+    
+
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView(eaglView);
     cocos2d::Director::getInstance()->setOpenGLView(glview);
 
+    ADBannerView *adview = [[ADBannerView alloc] initWithFrame:CGRectZero];
+    adview.center = CGPointMake(eaglView.bounds.size.width/2, eaglView.bounds.size.height - adview.frame.size.height/2);
+    [eaglView addSubview:adview];
+    
     app->run();
     return YES;
 }

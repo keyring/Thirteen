@@ -19,6 +19,7 @@
 		3B528CE11C3F874F00E7250C /* NCSGameCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B528CE01C3F874F00E7250C /* NCSGameCenter.m */; };
 		3B528CE41C3F877B00E7250C /* DIAAchievement.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3B528CE21C3F877B00E7250C /* DIAAchievement.mm */; };
 		3B528CE61C3F8FAF00E7250C /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B528CE51C3F8FAF00E7250C /* GameKit.framework */; };
+		3B8893911C4492F70020536D /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B8893901C4492F70020536D /* iAd.framework */; };
 		3EEEDB61197107C0006A9FF8 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEEDB60197107C0006A9FF8 /* MediaPlayer.framework */; };
 		5023811817EBBCAC00990C9B /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5023810817EBBCAC00990C9B /* AppController.mm */; };
 		5023811917EBBCAC00990C9B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5023810917EBBCAC00990C9B /* Default-568h@2x.png */; };
@@ -189,6 +190,7 @@
 		3B528CE21C3F877B00E7250C /* DIAAchievement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = DIAAchievement.mm; path = ../Classes/ios/DIAAchievement.mm; sourceTree = "<group>"; };
 		3B528CE31C3F877B00E7250C /* DIAAchievement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DIAAchievement.h; path = ../Classes/ios/DIAAchievement.h; sourceTree = "<group>"; };
 		3B528CE51C3F8FAF00E7250C /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
+		3B8893901C4492F70020536D /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/System/Library/Frameworks/iAd.framework; sourceTree = DEVELOPER_DIR; };
 		3EEEDB60197107C0006A9FF8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
 		5023810717EBBCAC00990C9B /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		5023810817EBBCAC00990C9B /* AppController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppController.mm; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B8893911C4492F70020536D /* iAd.framework in Frameworks */,
 				3B528CE61C3F8FAF00E7250C /* GameKit.framework in Frameworks */,
 				9FA3AE4E1BE9BCC900FC9645 /* CFNetwork.framework in Frameworks */,
 				ED545A891B68A23E00C3958E /* libiconv.dylib in Frameworks */,
@@ -457,6 +460,7 @@
 		F293B3CB15EB7BE500256477 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3B8893901C4492F70020536D /* iAd.framework */,
 				3B528CE51C3F8FAF00E7250C /* GameKit.framework */,
 				9FA3AE4D1BE9BCC900FC9645 /* CFNetwork.framework */,
 				ED545A8A1B68A24500C3958E /* libiconv.dylib */,
@@ -916,7 +920,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Xingfu Zeng (9C6M42B77A)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				ENABLE_BITCODE = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -946,8 +950,8 @@
 					"-image_base",
 					100000000,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kode.Thirteen;
-				PROVISIONING_PROFILE = "b4353ca8-2aae-4e4e-8464-399f2a0eb44f";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kode.ThirteenFree;
+				PROVISIONING_PROFILE = "ee0472dc-3bbe-46e2-9a5f-5e73648747a1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../cocos2d-x/cocos/platform/ios $(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -988,9 +992,9 @@
 					"-image_base",
 					100000000,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kode.Thirteen;
-				PRODUCT_NAME = Thirteen;
-				PROVISIONING_PROFILE = "ce622db4-d6bf-4f69-830a-107f62edfc35";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kode.ThirteenFree;
+				PRODUCT_NAME = "Thirteen-Free";
+				PROVISIONING_PROFILE = "3b39b9aa-742f-4f36-af8e-4c91acec17fc";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../cocos2d-x/cocos/platform/ios $(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
