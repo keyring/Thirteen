@@ -8,10 +8,10 @@ local Timer = cc.Director:getInstance():getScheduler()
 local UserData = cc.UserDefault:getInstance()
 
 
-local ROW = 7
-local COL = 7
-local PLAY_LAYER_WIDTH = 630
-local PLAY_LAYER_HEIGHT = 630
+local ROW = 6
+local COL = 6
+local PLAY_LAYER_WIDTH = 600
+local PLAY_LAYER_HEIGHT = 600
 local BLOCK_WIDTH = PLAY_LAYER_WIDTH / COL
 local BLOCK_HEIGHT = PLAY_LAYER_HEIGHT / ROW
 local HALF_BLOCK_WIDTH = BLOCK_WIDTH * 0.5
@@ -304,13 +304,13 @@ end
 
 function PlayScene:InitPlayData(  )
 	self.BlockSprites = { 
-					  false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false,
-					  false, false, false, false, false, false, false,
+					  -- false, false, false, false, false, false, false,
+					  false, false, false, false, false, false,-- false,
+					  false, false, false, false, false, false,-- false,
+					  false, false, false, false, false, false,-- false,
+					  false, false, false, false, false, false,-- false,
+					  false, false, false, false, false, false,-- false,
+					  false, false, false, false, false, false,-- false,
 					}
 
 	self.sourceBlockIndex = nil
@@ -709,7 +709,7 @@ function PlayScene:CheckAndCrush(checkblock)
 			-- end
 
 			-- 消一类
-			self:CrushOneType()
+			self:RandomChangeSome(5)
 
 		elseif #row_checklist + #col_checklist == 5 then
 			--[[  
@@ -797,11 +797,11 @@ function PlayScene:CrushOne(  )
 
 end
 
-function PlayScene:CrushOneType(  )
-	-- 随机消一类
+function PlayScene:RandomChangeSome( count )
+	-- 随机改变几个，不消除
 	local used = {}
 	for k,v in pairs(self.BlockSprites) do
-		if v and v.data.value ~= 13 then
+		if v then
 			table.insert(used, v.data.index)
 		end
 	end	
@@ -810,16 +810,22 @@ function PlayScene:CrushOneType(  )
 		return
 	end
 
-	local index = used[math.random(1, #used)]
-	local value = self.BlockSprites[index].data.value
-
-	for _,v in pairs(used) do
-		if self.BlockSprites[v].data.value == value then
-			self:CrushOneBlock(v)
-		end
-	end
-	
-
+    if #used <= count then
+        for _,v in pairs(used) do
+            local value = math.random(1,12)
+            self.BlockSprites[v].data.value = value
+            self.BlockSprites[v]:setSpriteFrame(value..".png")
+        end
+    else
+        for i=1,count do
+            local idx = math.random( 1, #used )
+            local value = math.random(1,12)
+            -- print(self.BlockSprites[used[idx]].data.value , value)
+            self.BlockSprites[used[idx]].data.value = value
+            self.BlockSprites[used[idx]]:setSpriteFrame(value..".png")
+            table.remove( used, idx )
+        end
+    end
 end
 
 function PlayScene:ChangeOneType(  )
@@ -875,19 +881,14 @@ function PlayScene:ChangeSomeone( count )
             self:CreateSpecialBlock(data)
         end
     else
-        local selected = {}
         for i=1,count do
             local idx = math.random( 1, #used )
-            table.insert( selected, used[idx] )
-            table.remove( used, idx )
-        end
-        for _,v in pairs(selected) do
-            local data = clone(self.BlockSprites[v].data)
+            local data = clone(self.BlockSprites[used[idx]].data)
             data.value = 13
             self:CrushOneBlock(v)
             self:CreateSpecialBlock(data)
+            table.remove( used, idx )
         end
-        selected = nil
     end
 end
 
