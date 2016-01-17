@@ -145,7 +145,7 @@ function PlayScene:CreateBackground(  )
 end
 
 function PlayScene:CreatePlayLayer( width, height )
-	local layer = cc.LayerColor:create(cc.c4b(0,0,0,0), width, height)
+	local layer = cc.LayerColor:create(cc.c4b(0,0,0,255), width, height)
 	layer:ignoreAnchorPointForPosition(false)
 	self.playLayer = layer
 
@@ -230,11 +230,16 @@ function PlayScene:CreatePlayLayer( width, height )
         	self.BlockSprites[target_index].data.posx = target_posx
         	self.BlockSprites[target_index].data.posy = target_posy
 
-			if self.BlockSprites[target_index].data.value == 13 then
-				self:CheckAndCrush(self.BlockSprites[target_index])
+			if self.BlockSprites[target_index].data.value ~= 13 then
+				self:RefreshNext()
+			else
+				self:runAction(cc.Sequence:create( cc.DelayTime:create(0.05), cc.CallFunc:create(function (  )
+						self:CheckAndCrush(self.BlockSprites[target_index])
+						self:RefreshNext()
+					end) ))
 			end
 
-        	self:RefreshNext()
+        	
 
         else
 
@@ -245,20 +250,30 @@ function PlayScene:CreatePlayLayer( width, height )
 	        else
 	        	-- 相加
 	        	self.BlockSprites[target_index].data.value = self.BlockSprites[target_index].data.value + self.BlockSprites[self.sourceBlockIndex].data.value
-	        	self.BlockSprites[target_index]:setSpriteFrame(self.BlockSprites[target_index].data.value..".png")
+	        	
 
-				self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
+				-- self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 	        	self.BlockSprites[self.sourceBlockIndex]:removeFromParent()
 	        	self.BlockSprites[self.sourceBlockIndex] = false
 
 	        	self:UpdateScore(self.BlockSprites[target_index].data.value)
 				
-				if self.BlockSprites[target_index].data.value == 13 then
-					self.BlockSprites[target_index]:setSpriteFrame("13.png")
-					self:CheckAndCrush(self.BlockSprites[target_index])
-				end
+				if self.BlockSprites[target_index].data.value ~= 13 then
+					self.BlockSprites[target_index]:setSpriteFrame(self.BlockSprites[target_index].data.value..".png")
+					self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
+					self:RefreshNext()
+				
+				else
+					
+					if not self:CheckAndCrush(self.BlockSprites[target_index]) then
+						self.BlockSprites[target_index]:setSpriteFrame("13.png")
+						self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
+					end
 
-	        	self:RefreshNext()
+					self:RefreshNext()
+					
+				end
+	        	
         	end
         end
 
@@ -376,7 +391,6 @@ function PlayScene:CreateGameOverLayer(  )
     local btn_home = ccui.Button:create()
     btn_home:loadTextureNormal("home.png", ccui.TextureResType.plistType)
     btn_home:setOpacity(0)
-    -- btn_home:setAnchorPoint(0.5,0)
     btn_home:setPosition(display.cx-200, height)
     layer:addChild(btn_home)
     btn_home:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
@@ -391,7 +405,6 @@ function PlayScene:CreateGameOverLayer(  )
     local btn_rank = ccui.Button:create()
     btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
     btn_rank:setOpacity(0)
-    -- btn_rank:setAnchorPoint(0.5,0)
     btn_rank:setPosition(display.cx-120, height)
     layer:addChild(btn_rank)
     btn_rank:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
@@ -403,11 +416,8 @@ function PlayScene:CreateGameOverLayer(  )
 
 	local btn_restart = ccui.Button:create()
 	btn_restart:loadTextureNormal("restart.png", ccui.TextureResType.plistType)
-	-- btn_restart:setOpacity(0)
-	-- btn_restart:setAnchorPoint(0.5,0)
 	layer:addChild(btn_restart)
 	btn_restart:setPosition(display.cx, height+40)
-	-- btn_restart:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
 	btn_restart:runAction(cc.RepeatForever:create(cc.RotateBy:create(3, 360)))
 	btn_restart:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
@@ -427,7 +437,6 @@ function PlayScene:CreateGameOverLayer(  )
     local btn_share = ccui.Button:create()
     btn_share:loadTextureNormal("share.png", ccui.TextureResType.plistType)
     btn_share:setOpacity(0)
-	-- btn_share:setAnchorPoint(0.5,0)
     btn_share:setPosition(display.cx+120, height)
     layer:addChild(btn_share)
     btn_share:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
@@ -441,22 +450,18 @@ function PlayScene:CreateGameOverLayer(  )
     local btn_rate = ccui.Button:create()
     btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
     btn_rate:setOpacity(0)
-    -- btn_rate:setAnchorPoint(0.5,0)
     btn_rate:setPosition(display.cx+200, height)
     layer:addChild(btn_rate)
     btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
     btn_rate:addTouchEventListener(function ( sender, eventType )
     	if eventType == ccui.TouchEventType.ended then
     		audio.playSound("click.wav", false)
-    		-- ii.IOSShare:goToAppStore()
     	end
     end)
 
 
 	display.newSprite("#line.png"):move(display.cx, height-50)
 		:addTo(layer)
-
-
 
 	local listener = cc.EventListenerTouchOneByOne:create()
 	listener:setSwallowTouches(true)
@@ -466,15 +471,9 @@ function PlayScene:CreateGameOverLayer(  )
 	local eventDispatcher = self:getEventDispatcher()
 	eventDispatcher:addEventListenerWithSceneGraphPriority(listener, layer)
 
-
-
-	-- ii.DIAAchievement:instance():reportScore(self.playScore, "thirteen_score")
-	-- ii.DIAAchievement:instance():reportScore(self.money, "thirteen_coin")
-
 end
 
 function PlayScene:CreateGameHelpLayer(  )
-	-- local layer = cc.LayerColor:create(cc.c4b(255,255,255,255))
 	local layer = cc.Layer:create()
 	self:addChild(layer)
 
@@ -540,8 +539,6 @@ function PlayScene:CreateSpecialBlock( data )
 
 	block.data = clone(data)
 
-	-- block.label = cc.Label:createWithSystemFont(block.data.value, "", 30):move(HALF_BLOCK_WIDTH,HALF_BLOCK_HEIGHT)
-	-- block:addChild(block.label)
 	block:setScale(0)
 	block:runAction( cc.ScaleTo:create(0.3, 1) )
 
@@ -621,7 +618,7 @@ function PlayScene:CheckAndCrush(checkblock)
 	end
 
 	if not crush_row and not crush_col then
-		return
+		return false
 	end
 
 	local checkblock_index = checkblock.data.index
@@ -775,7 +772,7 @@ function PlayScene:CheckAndCrush(checkblock)
 
 	end
 
-
+	return true
 
 end
 
