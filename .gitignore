@@ -4,7 +4,13 @@ frameworks/runtime-src/proj.win32/.vs
 frameworks/runtime-src/proj.win32/Debug.win32
 frameworks/runtime-src/proj.win32/Release.win32
 simulator/
+frameworks/runtime-src/proj.android/assets
+frameworks/runtime-src/proj.android/bin
+frameworks/runtime-src/proj.android/gen
+frameworks/runtime-src/proj.android/libs
+frameworks/runtime-src/proj.android/obj
 
 *sdf
 *.xcbkptlist
 *.luac
+
