@@ -24,17 +24,19 @@
  ****************************************************************************/
 
 #import <UIKit/UIKit.h>
-#import <iAd/iAd.h>
+#import <GoogleMobileAds/GoogleMobileAds.h>
 #import "cocos2d.h"
 
 #import "AppController.h"
 #import "AppDelegate.h"
 #import "RootViewController.h"
 #import "platform/ios/CCEAGLView-ios.h"
+
 #import "ios/IOSShareManager.h"
 #import "ios/DIAAchievement.h"
 
 @implementation AppController
+
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -93,9 +95,19 @@ static AppDelegate s_sharedApplication;
     cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView(eaglView);
     cocos2d::Director::getInstance()->setOpenGLView(glview);
 
-    ADBannerView *adview = [[ADBannerView alloc] initWithFrame:CGRectZero];
+//    ADBannerView *adview = [[ADBannerView alloc] initWithFrame:CGRectZero];
+//    adview.center = CGPointMake(eaglView.bounds.size.width/2, eaglView.bounds.size.height - adview.frame.size.height/2);
+//    [eaglView addSubview:adview];
+    
+    GADBannerView *adview = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
     adview.center = CGPointMake(eaglView.bounds.size.width/2, eaglView.bounds.size.height - adview.frame.size.height/2);
+    adview.adUnitID = @"ca-app-pub-7793457555950302/1673583474";
     [eaglView addSubview:adview];
+    adview.rootViewController = viewController;
+    
+    GADRequest *request = [GADRequest request];
+//    request.testDevices = @[ @"36b82c80192c446eeed22004ab1ca961" ];
+    [adview loadRequest: request];
     
     app->run();
     return YES;
