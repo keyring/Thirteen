@@ -145,7 +145,7 @@ function PlayScene:CreateBackground(  )
 end
 
 function PlayScene:CreatePlayLayer( width, height )
-	local layer = cc.LayerColor:create(cc.c4b(0,0,0,255), width, height)
+	local layer = cc.LayerColor:create(cc.c4b(0,0,0,0), width, height)
 	layer:ignoreAnchorPointForPosition(false)
 	self.playLayer = layer
 
@@ -415,6 +415,7 @@ function PlayScene:CreateGameOverLayer(  )
     end)
 
 	local btn_restart = ccui.Button:create()
+	btn_restart:setPressedActionEnabled(false)
 	btn_restart:loadTextureNormal("restart.png", ccui.TextureResType.plistType)
 	layer:addChild(btn_restart)
 	btn_restart:setPosition(display.cx, height+40)
