@@ -51,10 +51,14 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import android.widget.RelativeLayout;
+
+import com.baidu.mobads.AdView;
 
 public class AppActivity extends Cocos2dxActivity{
 
     static String hostIPAdress = "0.0.0.0";
+    private AdView adView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +96,19 @@ public class AppActivity extends Cocos2dxActivity{
             }
             hostIPAdress = getHostIpAddress();
         }
+
+        RelativeLayout yourOriginnalLayout = new RelativeLayout(this);
+        addContentView(yourOriginnalLayout, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+
+        String adPlaceId = "2395371";
+        //"2395371";
+        // "2015351";
+        adView = new AdView(this, adPlaceId);
+
+        RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        rllp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        yourOriginnalLayout.addView(adView, rllp);
     }
     private boolean isNetworkConnected() {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);  
@@ -127,4 +144,12 @@ public class AppActivity extends Cocos2dxActivity{
     private static native boolean nativeIsLandScape();
     private static native boolean nativeIsDebug();
     
+    /**
+     * Activity销毁时，销毁adView
+     */
+    @Override
+    protected void onDestroy() {
+        this.adView.destroy();
+        super.onDestroy();
+    }
 }
