@@ -33,6 +33,11 @@ function PlayScene:onCreate()
 
     self:CreatePlayLayer(PLAY_LAYER_WIDTH, PLAY_LAYER_HEIGHT):addTo(self):move(display.cx, display.cy)
 
+    self.refreshTimer = Timer:scheduleScriptFunc(function (  )
+	    self:RandomCreateBlock()
+
+	end,1,false)
+
 end
 
 function PlayScene:CreateBackground(  )
@@ -69,6 +74,7 @@ function PlayScene:CreateBackground(  )
 	btn_back:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
 			audio.playSound("click.wav", false)
+			Timer:unscheduleScriptEntry(self.refreshTimer)
 			local view = require("app.views.MainScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
 		end
@@ -159,7 +165,7 @@ function PlayScene:CreatePlayLayer( width, height )
 	end
 
 	-- 随机创建新的block
-	self:RefreshNext()
+	-- self:RefreshNext()
 
 
 	-- 添加触摸事件，对应游戏规则
@@ -231,11 +237,11 @@ function PlayScene:CreatePlayLayer( width, height )
         	self.BlockSprites[target_index].data.posy = target_posy
 
 			if self.BlockSprites[target_index].data.value ~= 13 then
-				self:RefreshNext()
+				-- self:RefreshNext()
 			else
 				self:runAction(cc.Sequence:create( cc.DelayTime:create(0.05), cc.CallFunc:create(function (  )
 						self:CheckAndCrush(self.BlockSprites[target_index])
-						self:RefreshNext()
+						-- self:RefreshNext()
 					end) ))
 			end
 
@@ -261,7 +267,7 @@ function PlayScene:CreatePlayLayer( width, height )
 				if self.BlockSprites[target_index].data.value ~= 13 then
 					self.BlockSprites[target_index]:setSpriteFrame(self.BlockSprites[target_index].data.value..".png")
 					self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
-					self:RefreshNext()
+					-- self:RefreshNext()
 				
 				else
 					
@@ -270,7 +276,7 @@ function PlayScene:CreatePlayLayer( width, height )
 						self.BlockSprites[target_index]:runAction(cc.Sequence:create( cc.ScaleTo:create(0.1, 1.2), cc.ScaleTo:create(0.2, 0.8), cc.ScaleTo:create(0.1, 1) ))
 					end
 
-					self:RefreshNext()
+					-- self:RefreshNext()
 					
 				end
 	        	
@@ -294,9 +300,9 @@ end
 
 function PlayScene:RefreshNext(  )
 	-- 可以随着分数的上涨增加难度，即同时多出现几个
-	for i=1,RANDOM_BLOCK_COUNT do
-		self:RandomCreateBlock()
-	end
+	-- for i=1,RANDOM_BLOCK_COUNT do
+	-- 	self:RandomCreateBlock()
+	-- end
 	
 end
 
@@ -314,7 +320,12 @@ function PlayScene:ResetGame(  )
 		return
 	end
 
-	self:RefreshNext()
+	-- self:RefreshNext()
+
+    self.refreshTimer = Timer:scheduleScriptFunc(function (  )
+	    self:RandomCreateBlock()
+    	
+	end,1,false)
 end
 
 function PlayScene:InitPlayData(  )
@@ -423,9 +434,11 @@ function PlayScene:CreateGameOverLayer(  )
 	btn_restart:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
 			audio.playSound("click.wav", false)
-			if self.money - 5 < 0 then
-				self.money = self.money + 100
-				UserData:setIntegerForKey("money", self.money)
+			if self.money - COST_MONEY < 0 then
+				-- self.money = self.money + 100
+				-- UserData:setIntegerForKey("money", self.money)
+				ShowFlashNotice()
+				return
 			end
 
 			self:ResetGame()
@@ -528,6 +541,7 @@ function PlayScene:RandomCreateBlock(  )
 
 	if #unused == 1 then
 		-- 下一次没有空位了
+		Timer:unscheduleScriptEntry(self.refreshTimer)
 		self:CreateGameOverLayer()
 	end
 
