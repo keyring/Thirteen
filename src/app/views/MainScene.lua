@@ -27,8 +27,8 @@ function MainScene:onCreate()
     	if eventType == ccui.TouchEventType.ended then
     		audio.playSound("click.wav", false)
 
-		    local money = UserData:getIntegerForKey("money")
-			if not money then
+		    local money = UserData:getIntegerForKey("money",-1)
+			if money == -1 then
 				money = 100
 				UserData:setIntegerForKey("money", money)
 			end
@@ -43,7 +43,7 @@ function MainScene:onCreate()
     		local view = require("app.views.PlayScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
     	end
-    end)
+    end) 
 
 	display.newSprite("effect.png"):move(display.cx, 20)
 		:setAnchorPoint(0.5,0)
