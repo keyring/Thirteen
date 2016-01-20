@@ -27,8 +27,8 @@ function MainScene:onCreate()
     	if eventType == ccui.TouchEventType.ended then
     		audio.playSound("click.wav", false)
 
-		    local money = UserData:getIntegerForKey("money")
-			if not money then
+		    local money = UserData:getIntegerForKey("money",-1)
+			if money == -1 then
 				money = 100
 				UserData:setIntegerForKey("money", money)
 			end
