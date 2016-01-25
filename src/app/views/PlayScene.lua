@@ -3,6 +3,8 @@
 -- Date: 2015-12-17 17:37:49
 --
 
+local luaj = require "cocos.cocos2d.luaj"
+
 local PlayScene = class("PlayScene", cc.load("mvc").ViewBase)
 local Timer = cc.Director:getInstance():getScheduler()
 local UserData = cc.UserDefault:getInstance()
@@ -79,16 +81,16 @@ function PlayScene:CreateBackground(  )
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
 		end
 	end)
-	local btn_rank = ccui.Button:create()
-	btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
-	background:addChild(btn_rank)
-	btn_rank:setPosition(display.width*0.3, display.top-45)
-	btn_rank:addTouchEventListener(function ( event, eventType )
-		if eventType == ccui.TouchEventType.ended then
-			audio.playSound("click.wav", false)
-			-- ii.DIAAchievement:instance():openGameCenter()
-		end
-	end)
+	-- local btn_rank = ccui.Button:create()
+	-- btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
+	-- background:addChild(btn_rank)
+	-- btn_rank:setPosition(display.width*0.3, display.top-45)
+	-- btn_rank:addTouchEventListener(function ( event, eventType )
+	-- 	if eventType == ccui.TouchEventType.ended then
+	-- 		audio.playSound("click.wav", false)
+	-- 		-- ii.DIAAchievement:instance():openGameCenter()
+	-- 	end
+	-- end)
 	-- local btn_shop = ccui.Button:create("shop.png")
 	-- background:addChild(btn_shop)
 	-- btn_shop:setPosition(display.width*0.5, display.top-45)
@@ -114,7 +116,7 @@ function PlayScene:CreateBackground(  )
 	local btn_share = ccui.Button:create()
 	btn_share:loadTextureNormal("share.png", ccui.TextureResType.plistType)
 	background:addChild(btn_share)
-	btn_share:setPosition(display.width*0.7, display.top-45)
+	btn_share:setPosition(display.width*0.9, display.top-45)
 	btn_share:addTouchEventListener(function ( event, eventType )
 		if eventType == ccui.TouchEventType.ended then
 		    audio.playSound("click.wav", false)
@@ -123,16 +125,16 @@ function PlayScene:CreateBackground(  )
 	end)
 
 
-	local btn_rate = ccui.Button:create()
-	btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
-	background:addChild(btn_rate)
-	btn_rate:setPosition(display.width*0.9, display.top-45)
-	btn_rate:addTouchEventListener(function ( event, eventType )
-		if eventType == ccui.TouchEventType.ended then
-			audio.playSound("click.wav", false)
-			-- ii.IOSShare:goToAppStore()
-		end
-	end)
+	-- local btn_rate = ccui.Button:create()
+	-- btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
+	-- background:addChild(btn_rate)
+	-- btn_rate:setPosition(display.width*0.9, display.top-45)
+	-- btn_rate:addTouchEventListener(function ( event, eventType )
+	-- 	if eventType == ccui.TouchEventType.ended then
+	-- 		audio.playSound("click.wav", false)
+	-- 		-- ii.IOSShare:goToAppStore()
+	-- 	end
+	-- end)
 
 	display.newSprite("#line.png"):move(display.cx, display.top-85)
 		:addTo(background)
@@ -413,17 +415,17 @@ function PlayScene:CreateGameOverLayer(  )
     	end
     end)
 
-    local btn_rank = ccui.Button:create()
-    btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
-    btn_rank:setOpacity(0)
-    btn_rank:setPosition(display.cx-120, height)
-    layer:addChild(btn_rank)
-    btn_rank:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
-    btn_rank:addTouchEventListener(function ( sender, eventType )
-    	if eventType == ccui.TouchEventType.ended then
-    		audio.playSound("click.wav", false)
-    	end
-    end)
+    -- local btn_rank = ccui.Button:create()
+    -- btn_rank:loadTextureNormal("rank.png", ccui.TextureResType.plistType)
+    -- btn_rank:setOpacity(0)
+    -- btn_rank:setPosition(display.cx-120, height)
+    -- layer:addChild(btn_rank)
+    -- btn_rank:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
+    -- btn_rank:addTouchEventListener(function ( sender, eventType )
+    -- 	if eventType == ccui.TouchEventType.ended then
+    -- 		audio.playSound("click.wav", false)
+    -- 	end
+    -- end)
 
 	local btn_restart = ccui.Button:create()
 	btn_restart:setPressedActionEnabled(false)
@@ -451,7 +453,7 @@ function PlayScene:CreateGameOverLayer(  )
     local btn_share = ccui.Button:create()
     btn_share:loadTextureNormal("share.png", ccui.TextureResType.plistType)
     btn_share:setOpacity(0)
-    btn_share:setPosition(display.cx+120, height)
+    btn_share:setPosition(display.cx+200, height)
     layer:addChild(btn_share)
     btn_share:runAction( cc.Sequence:create( cc.DelayTime:create(0.4), cc.FadeIn:create(1) ) )
     btn_share:addTouchEventListener(function ( sender, eventType )
@@ -461,17 +463,17 @@ function PlayScene:CreateGameOverLayer(  )
     	end
     end)
 
-    local btn_rate = ccui.Button:create()
-    btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
-    btn_rate:setOpacity(0)
-    btn_rate:setPosition(display.cx+200, height)
-    layer:addChild(btn_rate)
-    btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
-    btn_rate:addTouchEventListener(function ( sender, eventType )
-    	if eventType == ccui.TouchEventType.ended then
-    		audio.playSound("click.wav", false)
-    	end
-    end)
+    -- local btn_rate = ccui.Button:create()
+    -- btn_rate:loadTextureNormal("rate.png", ccui.TextureResType.plistType)
+    -- btn_rate:setOpacity(0)
+    -- btn_rate:setPosition(display.cx+200, height)
+    -- layer:addChild(btn_rate)
+    -- btn_rate:runAction( cc.Sequence:create( cc.DelayTime:create(0.8), cc.FadeIn:create(1) ) )
+    -- btn_rate:addTouchEventListener(function ( sender, eventType )
+    -- 	if eventType == ccui.TouchEventType.ended then
+    -- 		audio.playSound("click.wav", false)
+    -- 	end
+    -- end)
 
 
 	display.newSprite("#line.png"):move(display.cx, height-50)
@@ -1034,7 +1036,17 @@ function PlayScene:CaptureAndShare(  )
 
 	local function afterCaptured(succeed, outputFile)
         if succeed then
-            -- ii.IOSShare:share(300,300)
+        	local className = "org/cocos2dx/lua/AndroidThird"
+        	local methodName = "shareToQQ"
+        	local args = {
+        		"13少－Thirteen-获得高分",
+        		"我在游戏\"13少\"里获得新的分数: "..self.playScore.."，超过我有奖励哦！",
+        		"http://a.app.qq.com/o/simple.jsp?pkgname=com.kode.Thirteen",
+        		outputFile,
+        		"13少(Thirteen)"
+        	}
+
+        	luaj.callStaticMethod(className, methodName, args, nil)      
         end
     end
 

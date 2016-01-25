@@ -33,6 +33,7 @@ import java.util.Enumeration;
 import java.util.ArrayList;
 
 import org.cocos2dx.lib.Cocos2dxActivity;
+import org.cocos2dx.lib.Cocos2dxLuaJavaBridge;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -55,14 +56,24 @@ import android.widget.RelativeLayout;
 
 import com.baidu.mobads.AdView;
 
+import com.tencent.connect.share.QQShare;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+
 public class AppActivity extends Cocos2dxActivity{
+
 
     static String hostIPAdress = "0.0.0.0";
     private AdView adView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+         // TODO: SDK 初始化
+        AndroidThird.init(this);       
+
         if(nativeIsLandScape()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else {
@@ -109,6 +120,8 @@ public class AppActivity extends Cocos2dxActivity{
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         rllp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         yourOriginnalLayout.addView(adView, rllp);
+
+
     }
     private boolean isNetworkConnected() {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);  
