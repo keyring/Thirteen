@@ -29,7 +29,7 @@
     // 你可以先截屏保存到document下，这里的image读取document下面。
     NSString *aPath3=[NSString stringWithFormat:@"%@/Documents/CaptureScreen.png", NSHomeDirectory()];
     UIImage *image=[[UIImage alloc]initWithContentsOfFile:aPath3];
-    NSString *msg = @"Beat my score! @Thirteen_game https://itunes.apple.com/us/app/thirteen!/id1072124511";
+    NSString *msg = @"Beat my score! @Thirteen_game https://itunes.apple.com/us/app/thirteen-free/id1073409649";
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[image, msg] applicationActivities:nil];
     
@@ -75,7 +75,7 @@
 -(void)goToAppStore
 {
     NSString *str = [NSString stringWithFormat:
-                     @"itms-apps://itunes.apple.com/us/app/thirteen!/id1072124511?ls=1&mt=8"];
+                     @"itms-apps://itunes.apple.com/us/app/thirteen-free/id1073409649?ls=1&mt=8"];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
     
 }
