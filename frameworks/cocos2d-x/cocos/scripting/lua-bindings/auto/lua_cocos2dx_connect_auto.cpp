@@ -517,14 +517,15 @@ int lua_cocos2dx_connect_ConnectUtility_registerLuaCallback(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        int arg0;
 
-        ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "ConnectUtility:registerLuaCallback");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_connect_ConnectUtility_registerLuaCallback'", nullptr);
-            return 0;
-        }
+
+        int arg0 = toluafix_ref_function(tolua_S,2,0);
+//        ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "ConnectUtility:registerLuaCallback");
+//        if(!ok)
+//        {
+//            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_connect_ConnectUtility_registerLuaCallback'", nullptr);
+//            return 0;
+//        }
         cobj->registerLuaCallback(arg0);
         lua_settop(tolua_S, 1);
         return 1;

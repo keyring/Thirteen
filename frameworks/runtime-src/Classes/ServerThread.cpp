@@ -216,7 +216,7 @@ void ServerThread::udpStart(){
 
 void ServerThread::udpWorkerThread(){
     while (udpRunning) {
-        bool bRet = mcast_ods.UdpSend(MCAST_DATA, sizeof(MCAST_DATA));
+        bool bRet = mcast_ods.UdpSend(mcastData, strlen(mcastData));
         if (!bRet) {
             log("error");
             break;

@@ -40,7 +40,7 @@ function MainScene:onCreate()
 				-- UserData:setIntegerForKey("money", money)
 			end
 
-    		local view = require("app.views.PlayScene").new()
+    		local view = require("app.views.ConnectRoomScene").new()
     		view:showWithScene("FADE", 1, cc.c3b(255,255,255))
     	end
     end) 

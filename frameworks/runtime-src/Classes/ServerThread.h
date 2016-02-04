@@ -39,6 +39,7 @@ public:
     void setCallback(Callback callback){
         p_callback = callback;
     }
+    void setMcastData(const char *data){ strcpy(mcastData, data); }
 protected:
     void workerThread();    //tcp工作线程
 //    void AcceptThread();    //tcp工作线程
@@ -47,7 +48,7 @@ protected:
     ODSocket server_ods,mcast_ods;
     char *buff;
     int cliList[BACKLOG];
-    
+    char mcastData[128];
     fd_set g_fdClientSock;  //客户端列表
     int global_maxfd;
     bool udpRunning,tcpRunning;

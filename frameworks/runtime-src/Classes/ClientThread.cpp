@@ -130,18 +130,24 @@ void ClientThread::udpWorkerThread(){
             break;
         }
         log("recv:%s ip:%s",roomname,roomip);
-        if (serversIp.find(roomip) == serversIp.end()) {
-            serversIp[roomip] = roomname;
-            if (p_callback) {
-                char cbuff[256];
-                sprintf(cbuff, "%d_%s_%s",ADD_ROOM, roomip, roomname);
-                p_callback(cbuff);
-            }
-        }
+        
+        serverIp = roomip;
+//        serversIp[std::string(roomip)] = std::string(roomname);
+//        std::map<std::string, std::string>::iterator it = serversIp.find(std::string(roomip));
+//        if (it == serversIp.end()) {
+//            printf("add room\n");
+//            serversIp[std::string(roomip)] = std::string(roomname);
+//            if (p_callback) {
+//                char cbuff[256];
+//                sprintf(cbuff, "%d_%s_%s",ADD_ROOM, roomip, roomname);
+//                p_callback(cbuff);
+//            }
+//        }
 
         udpRecv = true;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+
     log("client:udp socket closed!");
     mcast_ods.Close();
     mcast_ods.Clean();

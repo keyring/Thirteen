@@ -41,7 +41,7 @@ bool ConnectUtility::init(){
                 cltIp[i][j]=0;
             }
         }
-        
+        ClientThread::getInstance()->setCallback(CC_CALLBACK_1(ConnectUtility::ClientThreadCallback, this));
         bRet = true;
     } while (0);
     return bRet;
@@ -97,9 +97,10 @@ void ConnectUtility::NewRoom(std::string roomName)
     //开启TCP服务端
     ServerThread::getInstance()->start();
     //开启UDP多播
+    ServerThread::getInstance()->setMcastData(roomName.c_str());
     ServerThread::getInstance()->udpStart();
     //关闭Udp客户端
-    //            ClientThread::getInstance()->udpStop();
+    ClientThread::getInstance()->udpStop();
     
     ServerThread::getInstance()->setCallback(CC_CALLBACK_1(ConnectUtility::ServerThreadCallback, this));
 }
@@ -108,7 +109,7 @@ void ConnectUtility::JoinRoom(const char *serverIp){
     ClientThread::getInstance()->setServerIp(serverIp);
     isInRoom = ClientThread::getInstance()->start();
     
-    ClientThread::getInstance()->setCallback(CC_CALLBACK_1(ConnectUtility::ClientThreadCallback, this));
+
 }
 
 void ConnectUtility::ExitRoom(){
@@ -193,8 +194,13 @@ void ConnectUtility::ClientThreadCallback(void *buff)
 //    str.append(sbuff);
     int msgtype = atoi(sbuff);
     char *msg = sbuff+2;
-    
+    printf("%d,%s\n", msgtype, msg);
     switch (msgtype) {
+        case ADD_ROOM:
+            // 客户端收到游戏开始的消息，通知lua层游戏开始
+            executeLuaCallback(sbuff);
+            printf("to lua\n");
+            break;
         case GAME_START:
             // 客户端收到游戏开始的消息，通知lua层游戏开始
             executeLuaCallback(sbuff);
