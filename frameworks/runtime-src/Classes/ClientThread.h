@@ -24,7 +24,7 @@ public:
     int state;   // -1 默认值 0 表示连接成功 1 表示连接失败 2 结束进程
     ODSocket getSocket();
     void stop();
-    void sendMessage();
+    void sendMessage(const char *msg);
     void udpStart();
     void udpStop();
     void setMessage(char *buff){
@@ -34,6 +34,10 @@ public:
     char *getServerIp(){
         return serverIp;
     }
+    char *getClientIp(){
+        return clientIp;
+    }
+    void setServerIp(char ip[]){ for(int i = 0; i < 16; i++) serverIp[i] = ip[i]; }
     void setCallback(Callback callback){
         p_callback = callback;
     }
@@ -43,8 +47,8 @@ protected:
 protected:
     ODSocket client_ods,mcast_ods;
     char *buff;
-    char serverIp[16];
-    
+    char serverIp[16], clientIp[16];
+    std::map<std::string, std::string> serversIp;
     bool bUdpRunning;
     Callback p_callback;
 };

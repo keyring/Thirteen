@@ -94,9 +94,8 @@ void ClientThread::stop(){
     //发送结束信息，等待结束返回值
 }
 
-void ClientThread::sendMessage(){
-    char buff[]="client:test message!";
-    client_ods.Send(buff, sizeof(buff));
+void ClientThread::sendMessage(const char *msg){
+    client_ods.Send(msg, sizeof(buff));
 }
 
 ODSocket ClientThread::getSocket(){
@@ -114,24 +113,31 @@ void ClientThread::udpStart(){
     mcast_ods.UdpBind(MCAST_ADDR,MCAST_PORT);
     udpRecv = false;
     bUdpRunning = true;
+    sprintf(clientIp, "%s", inet_ntoa(mcast_ods.local_addr.sin_addr));
     thread t1(&ClientThread::udpWorkerThread,this);
     t1.detach();
     log("udpStart ok!");
 }
 
 void ClientThread::udpWorkerThread(){
-    char sss[256];
-    char fromip[16];
+    char roomname[128];
+    char roomip[16];
     while (1&&state!=0||bUdpRunning) {
-        memset(sss, 0, 256);
-        mcast_ods.UdpRecv(sss,256,fromip);
+        memset(roomname, 0, 256);
+        mcast_ods.UdpRecv(roomname,256,roomip);
         if (!bUdpRunning) {
             break;
         }
-        log("recv:%s ip:%s",sss,fromip);
-        for (int i = 0; i< 16; i++) {
-            serverIp[i]=fromip[i];
+        log("recv:%s ip:%s",roomname,roomip);
+        if (serversIp.find(roomip) == serversIp.end()) {
+            serversIp.insert(roomip, roomname);
+            if (p_callback) {
+                char cbuff[256];
+                sprintf(cbuff, "%d_%s_%s",ADD_ROOM, roomip, roomname);
+                p_callback(cbuff);
+            }
         }
+
         udpRecv = true;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }

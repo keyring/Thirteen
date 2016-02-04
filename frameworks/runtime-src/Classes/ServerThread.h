@@ -15,6 +15,7 @@
 typedef std::function<void(void *buff)> Callback;
 
 #define BACKLOG 10
+#define CLIENT_MAX 2
 
 class ServerThread {
 public:
@@ -29,7 +30,7 @@ public:
     int state;   // 0 表示连接成功 1 表示连接失败 2 结束进程
     ODSocket getSocket();
     
-    void sendMessage();
+    void sendMessage(const char *msg);
     
     void showclient();
     char clientIp[BACKLOG][16];

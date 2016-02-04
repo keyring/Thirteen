@@ -32,7 +32,7 @@ void ServerThread::destoryInstance(){
 
 void ServerThread::workerThread(){
     int nRet = 0 ;
-    buff = (char*)malloc(sizeof(char)*1024);
+//    buff = (char*)malloc(sizeof(char)*1024);
     
     struct timeval timeout = {3,0}; // 超时
     global_maxfd = server_ods.getSocket();
@@ -79,18 +79,18 @@ void ServerThread::workerThread(){
                     }
                     else{//数据接收成功！
                         log("client[%d] send:%s",i,abuff);
-                        char sendBuff[]="Recv ok!";
-                        client_fd.Send(sendBuff, 256);
-                        char tobuff[256];
-                        sprintf(tobuff, "client[%d] say:%s",i,abuff);
+//                        char sendBuff[]="Recv ok!";
+//                        client_fd.Send(sendBuff, 256);
+//                        char tobuff[256];
+//                        sprintf(tobuff, "client[%d] say:%s",i,abuff);
                         if (p_callback) {
-                            p_callback(tobuff);
+                            p_callback(abuff);
                         }                       
                     }
                 }
             }
             
-            if (FD_ISSET(server_ods.getSocket(), &g_fdClientSock)) {
+            if (clientNum < CLIENT_MAX && FD_ISSET(server_ods.getSocket(), &g_fdClientSock)) {
                 /**有新的客户端加入
                  *此处应该调用accept
                  */
@@ -100,12 +100,12 @@ void ServerThread::workerThread(){
                 for (int i = 0; i < 16; i++) {
                     clientIp[clientNum][i]=ip[i];
                 }
-                cliList[clientNum++] = clientSock.getSocket();
                 log("new connection client[%d] %s",clientNum,ip);
+                cliList[clientNum++] = clientSock.getSocket();
+
                 if (global_maxfd<clientSock.getSocket()) {
                     global_maxfd = clientSock.getSocket();
                 }
-                
             }
             
         }
@@ -185,12 +185,11 @@ void ServerThread::stop(){
     tcpRunning = false;
 }
 
-void ServerThread::sendMessage(){
-    buff = "server:test message!";
+void ServerThread::sendMessage(const char *msg){
     ODSocket client_fd;
     for (int i = 0 ; i < clientNum; i++) {
         client_fd = cliList[i];
-        client_fd.Send(buff, 256);
+        client_fd.Send(msg, 256);
     }
     
     

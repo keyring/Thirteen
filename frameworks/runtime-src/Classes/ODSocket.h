@@ -114,11 +114,11 @@ public:
     
     SOCKET getSocket();
     
-    
+    struct sockaddr_in local_addr;
 protected:
 	SOCKET m_sock;
     fd_set fdR;
-    struct sockaddr_in local_addr,mcast_addr;
+    struct sockaddr_in mcast_addr;
     
 
 };
