@@ -29,11 +29,9 @@ public:
     ConnectUtility();
     ~ConnectUtility();
     bool init();
-    virtual void onEnter();
-    virtual void onExit();
     CREATE_FUNC(ConnectUtility);
     bool isJoinRoom(){ return isInRoom;}
-    void JoinRoom(char *serverip);
+    void JoinRoom(const char *serverip);
     void ExitRoom();
     void GameFailed();
     void NewRoom(std::string roomName);
@@ -41,7 +39,7 @@ public:
     void SendToClient(const char *msg);
     char *getClientIp(){ return ClientThread::getInstance()->getClientIp(); }
     void registerLuaCallback(int handler);
-    void executeLuaCallback(char *msg);
+    void executeLuaCallback(const char *msg);
 protected:
 
     void logic(float dt);

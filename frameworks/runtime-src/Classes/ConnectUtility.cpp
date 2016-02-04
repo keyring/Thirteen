@@ -47,6 +47,7 @@ bool ConnectUtility::init(){
     return bRet;
 }
 
+
 void ConnectUtility::logic(float dt){
     if (ClientThread::getInstance()->udpRecv&&!isInRoom) {
         /**显示房间信息
@@ -103,7 +104,7 @@ void ConnectUtility::NewRoom(std::string roomName)
     ServerThread::getInstance()->setCallback(CC_CALLBACK_1(ConnectUtility::ServerThreadCallback, this));
 }
 
-void ConnectUtility::JoinRoom(char *serverIp){
+void ConnectUtility::JoinRoom(const char *serverIp){
     ClientThread::getInstance()->setServerIp(serverIp);
     isInRoom = ClientThread::getInstance()->start();
     
@@ -127,7 +128,7 @@ void ConnectUtility::registerLuaCallback(int handler)
     luaCallback = handler;
 }
 
-void ConnectUtility::executeLuaCallback(char *msg)
+void ConnectUtility::executeLuaCallback(const char *msg)
 {
     cocos2d::LuaStack* stack = cocos2d::LuaEngine::getInstance()->getLuaStack();
     if (nullptr == stack)

@@ -15,10 +15,11 @@
 		15A8A4881834C90F00142BE0 /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 15A8A4871834C90E00142BE0 /* libcurl.dylib */; };
 		1AF4C403178663F200122817 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF4C402178663F200122817 /* libz.dylib */; };
 		3B1292C51C62E56C0002BC14 /* ClientThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292B01C62E56C0002BC14 /* ClientThread.cpp */; };
-		3B1292C71C62E56C0002BC14 /* ConnectUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292B41C62E56C0002BC14 /* ConnectUtility.cpp */; };
 		3B1292CC1C62E56C0002BC14 /* MySocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292BF1C62E56C0002BC14 /* MySocket.cpp */; };
 		3B1292CD1C62E56C0002BC14 /* ODSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292C11C62E56C0002BC14 /* ODSocket.cpp */; };
 		3B1292CE1C62E56C0002BC14 /* ServerThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292C31C62E56C0002BC14 /* ServerThread.cpp */; };
+		3B1292EC1C6328800002BC14 /* ConnectUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292EA1C6328800002BC14 /* ConnectUtility.cpp */; };
+		3B1292ED1C6328800002BC14 /* ConnectUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B1292EA1C6328800002BC14 /* ConnectUtility.cpp */; };
 		3EEEDB61197107C0006A9FF8 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEEDB60197107C0006A9FF8 /* MediaPlayer.framework */; };
 		5023811817EBBCAC00990C9B /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5023810817EBBCAC00990C9B /* AppController.mm */; };
 		5023811917EBBCAC00990C9B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5023810917EBBCAC00990C9B /* Default-568h@2x.png */; };
@@ -182,14 +183,14 @@
 		1AF4C402178663F200122817 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		3B1292B01C62E56C0002BC14 /* ClientThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientThread.cpp; path = ../Classes/ClientThread.cpp; sourceTree = "<group>"; };
 		3B1292B11C62E56C0002BC14 /* ClientThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientThread.h; path = ../Classes/ClientThread.h; sourceTree = "<group>"; };
-		3B1292B41C62E56C0002BC14 /* ConnectUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConnectUtility.cpp; path = ../Classes/ConnectUtility.cpp; sourceTree = "<group>"; };
-		3B1292B51C62E56C0002BC14 /* ConnectUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConnectUtility.h; path = ../Classes/ConnectUtility.h; sourceTree = "<group>"; };
 		3B1292BF1C62E56C0002BC14 /* MySocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MySocket.cpp; path = ../Classes/MySocket.cpp; sourceTree = "<group>"; };
 		3B1292C01C62E56C0002BC14 /* MySocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySocket.h; path = ../Classes/MySocket.h; sourceTree = "<group>"; };
 		3B1292C11C62E56C0002BC14 /* ODSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ODSocket.cpp; path = ../Classes/ODSocket.cpp; sourceTree = "<group>"; };
 		3B1292C21C62E56C0002BC14 /* ODSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ODSocket.h; path = ../Classes/ODSocket.h; sourceTree = "<group>"; };
 		3B1292C31C62E56C0002BC14 /* ServerThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerThread.cpp; path = ../Classes/ServerThread.cpp; sourceTree = "<group>"; };
 		3B1292C41C62E56C0002BC14 /* ServerThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerThread.h; path = ../Classes/ServerThread.h; sourceTree = "<group>"; };
+		3B1292EA1C6328800002BC14 /* ConnectUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConnectUtility.cpp; path = ../Classes/ConnectUtility.cpp; sourceTree = "<group>"; };
+		3B1292EB1C6328800002BC14 /* ConnectUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConnectUtility.h; path = ../Classes/ConnectUtility.h; sourceTree = "<group>"; };
 		3EEEDB60197107C0006A9FF8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
 		5023810717EBBCAC00990C9B /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		5023810817EBBCAC00990C9B /* AppController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppController.mm; sourceTree = "<group>"; };
@@ -472,10 +473,10 @@
 		F293BB7C15EB830F00256477 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				3B1292EA1C6328800002BC14 /* ConnectUtility.cpp */,
+				3B1292EB1C6328800002BC14 /* ConnectUtility.h */,
 				3B1292B01C62E56C0002BC14 /* ClientThread.cpp */,
 				3B1292B11C62E56C0002BC14 /* ClientThread.h */,
-				3B1292B41C62E56C0002BC14 /* ConnectUtility.cpp */,
-				3B1292B51C62E56C0002BC14 /* ConnectUtility.h */,
 				3B1292BF1C62E56C0002BC14 /* MySocket.cpp */,
 				3B1292C01C62E56C0002BC14 /* MySocket.h */,
 				3B1292C11C62E56C0002BC14 /* ODSocket.cpp */,
@@ -699,6 +700,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B1292ED1C6328800002BC14 /* ConnectUtility.cpp in Sources */,
 				C07828FA18B4D72E00BD2287 /* SimulatorApp.mm in Sources */,
 				9FFE00A01ACCF59E00D6E35A /* lua_debugger.c in Sources */,
 				5023813317EBBCE400990C9B /* AppDelegate.cpp in Sources */,
@@ -717,11 +719,11 @@
 				9FC760451A677A4A00D1E6E7 /* SimpleConfigParser.cpp in Sources */,
 				3B1292CD1C62E56C0002BC14 /* ODSocket.cpp in Sources */,
 				5023812517EBBCAC00990C9B /* RootViewController.mm in Sources */,
-				3B1292C71C62E56C0002BC14 /* ConnectUtility.cpp in Sources */,
 				F293BB9C15EB831F00256477 /* AppDelegate.cpp in Sources */,
 				3B1292CC1C62E56C0002BC14 /* MySocket.cpp in Sources */,
 				9FFE009F1ACCF59E00D6E35A /* lua_debugger.c in Sources */,
 				5023812417EBBCAC00990C9B /* main.m in Sources */,
+				3B1292EC1C6328800002BC14 /* ConnectUtility.cpp in Sources */,
 				9FFE00A11ACCF59E00D6E35A /* RuntimeLuaImpl.cpp in Sources */,
 				5023811817EBBCAC00990C9B /* AppController.mm in Sources */,
 			);

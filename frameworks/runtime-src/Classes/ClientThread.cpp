@@ -26,6 +26,7 @@ ClientThread *ClientThread::getInstance(){
 }
 
 void ClientThread::destoryInstance(){
+    serversIp.clear();
     delete p_ClientThread;
     p_ClientThread = nullptr;
 }
@@ -130,7 +131,7 @@ void ClientThread::udpWorkerThread(){
         }
         log("recv:%s ip:%s",roomname,roomip);
         if (serversIp.find(roomip) == serversIp.end()) {
-            serversIp.insert(roomip, roomname);
+            serversIp[roomip] = roomname;
             if (p_callback) {
                 char cbuff[256];
                 sprintf(cbuff, "%d_%s_%s",ADD_ROOM, roomip, roomname);

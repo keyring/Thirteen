@@ -12,6 +12,7 @@
 #include "audioengine/lua_cocos2dx_audioengine_manual.h"
 #include "physics3d/lua_cocos2dx_physics3d_manual.h"
 #include "navmesh/lua_cocos2dx_navmesh_manual.h"
+#include "lua_cocos2dx_connect_auto.hpp"
 
 static int lua_module_register(lua_State* L)
 {
@@ -31,6 +32,7 @@ static int lua_module_register(lua_State* L)
 #if CC_USE_NAVMESH
     register_navmesh_module(L);
 #endif
+    register_all_cocos2dx_connect(L);
     return 1;
 }
 

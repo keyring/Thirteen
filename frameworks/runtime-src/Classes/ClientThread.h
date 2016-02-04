@@ -37,7 +37,7 @@ public:
     char *getClientIp(){
         return clientIp;
     }
-    void setServerIp(char ip[]){ for(int i = 0; i < 16; i++) serverIp[i] = ip[i]; }
+    void setServerIp(const char ip[]){ for(int i = 0; i < 16; i++) serverIp[i] = ip[i]; }
     void setCallback(Callback callback){
         p_callback = callback;
     }
